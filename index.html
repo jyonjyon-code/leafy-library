@@ -2,20 +2,21 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Leafy Library - necotastudio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --primary-green: #4CAF50;
             --dark-green: #2E7D32;
             --wood-brown: #5D4037;
             --paper-white: #F5F5DC;
-            --x-black: #000000;
-            --insta-pink: #E1306C;
+            --rakuten-red: #BF0000;
         }
 
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Zen Maru Gothic', sans-serif;
             background-color: var(--paper-white);
             color: var(--wood-brown);
             margin: 0;
@@ -31,51 +32,121 @@
             width: 100%;
             padding: 20px 0;
             text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        /* 本棚 */
+        /* 本棚のデザイン */
         .bookshelf {
-            width: 90%; max-width: 500px; background-color: var(--wood-brown);
-            padding: 20px 15px; border-radius: 8px; margin: 20px 0;
-            min-height: 100px; display: flex; flex-wrap: wrap; gap: 8px;
-            border-bottom: 12px solid #3e2723; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+            background-color: var(--wood-brown);
+            padding: 20px 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 120px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-content: flex-start;
+            border-bottom: 12px solid #3e2723;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
         }
 
         .book {
-            width: 20px; height: 75px; border-left: 3px solid rgba(255,255,255,0.2);
-            border-radius: 3px; cursor: pointer; transition: all 0.2s;
+            width: 22px;
+            height: 80px;
+            border-left: 3px solid rgba(255,255,255,0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
         }
-        .book:hover { transform: translateY(-10px); }
 
-        /* ポップアップ/詳細エリア */
+        .book:hover {
+            transform: translateY(-15px) rotate(-2deg);
+            box-shadow: 5px 15px 20px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        /* 表示パネル */
         #display-panel {
-            width: 85%; max-width: 480px; background: white; padding: 20px;
-            border-radius: 15px; border: 2px solid var(--primary-green);
-            margin: 15px 0; text-align: center; display: none; animation: fadeIn 0.3s;
+            width: 85%;
+            max-width: 480px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            border: 3px solid var(--primary-green);
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* SNSボタン */
         .sns-buttons { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
         .btn-sns {
-            padding: 8px 15px; border-radius: 20px; border: none; color: white;
-            font-size: 0.8rem; cursor: pointer; text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .btn-x { background-color: var(--x-black); }
-        .btn-insta { background-color: var(--insta-pink); }
+        .btn-x { background-color: #000; }
+        .btn-insta { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
-        /* アフィリエイト枠 */
         .affiliate-box {
-            margin-top: 15px; padding: 10px; border: 1px dashed var(--primary-green);
-            background-color: #f0fff0; font-size: 0.9rem;
+            margin-top: 15px;
+            padding: 12px;
+            border: 2px solid var(--rakuten-red);
+            background-color: #fff5f5;
+            border-radius: 12px;
         }
-        .affiliate-link { color: var(--dark-green); font-weight: bold; text-decoration: underline; }
+        .affiliate-link {
+            color: var(--rakuten-red);
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
 
         /* 入力エリア */
-        .controls { width: 90%; max-width: 500px; text-align: center; margin-top: 20px; }
-        select, button { padding: 12px; margin: 5px; border-radius: 25px; font-size: 16px; }
-        .btn-eat { background-color: var(--primary-green); color: white; border: none; cursor: pointer; }
+        .controls {
+            width: 90%;
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        label { font-size: 0.8rem; font-weight: bold; color: var(--dark-green); display: block; margin-top: 10px; text-align: left; }
+        select, button {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Zen Maru Gothic', sans-serif;
+        }
+        .btn-eat {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 900;
+            box-shadow: 0 4px 0 var(--dark-green);
+        }
+        .btn-eat:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--dark-green); }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .stats { font-size: 1.5rem; margin: 15px 0; font-weight: 900; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -85,58 +156,98 @@
     <small>LL - 菜もの貯蔵庫 by necotastudio</small>
 </header>
 
-<div style="margin-top:10px;">
-    総葉っぱ数: <span id="leaf-count" style="font-size:1.5rem; font-weight:bold;">0</span> 枚
-</div>
+<div class="stats">総葉っぱ数: <span id="leaf-count">0</span> 枚</div>
 
 <div class="bookshelf" id="shelf"></div>
 
 <div id="display-panel">
     <div id="panel-content"></div>
-    
     <div class="sns-buttons">
-        <a id="share-x" class="btn-sns btn-x" target="_blank">Xで報告</a>
-        <a href="https://www.instagram.com/necotastudio" target="_blank" class="btn-sns btn-insta">Insta報告</a>
+        <a id="share-x" class="btn-sns btn-x" target="_blank"><i class="fa-brands fa-x-twitter"></i> Xで報告</a>
+        <a href="https://www.instagram.com/necotastudio" target="_blank" class="btn-sns btn-insta"><i class="fa-brands fa-instagram"></i> Insta</a>
     </div>
 </div>
 
 <div class="controls">
-    <select id="food-select">
-        <option value="1" data-link="https://amzn.to/example-lettuce">レタス (1枚)</option>
-        <option value="4" data-link="https://amzn.to/example-okonomiyaki">お好み焼き (4枚)</option>
-        <option value="8" data-link="https://amzn.to/example-juice">野菜ジュース (8枚)</option>
-        <option value="10" data-link="https://amzn.to/example-aojiru">青汁 (10枚)</option>
+    <label>① 野菜の種類を選ぶ</label>
+    <select id="category-filter" onchange="filterMenu()">
+        <option value="all">すべての料理</option>
+        <option value="キャベツ">キャベツ系</option>
+        <option value="レタス">レタス系</option>
+        <option value="ほうれん草">ほうれん草系</option>
+        <option value="ケール">ケール・青汁系</option>
+        <option value="白菜">白菜・小松菜系</option>
     </select>
-    <button class="btn-eat" onclick="eat()">野菜を記録する！</button>
+
+    <label>② 食べた料理を選ぶ</label>
+    <select id="food-select"></select>
+    
+    <button class="btn-eat" onclick="eat()">野菜を記録して蔵書を増やす</button>
 </div>
 
 <script>
     let totalLeaves = 0;
     let unlockedIds = new Set();
 
-    const bookData = [
-        {id: 1, threshold: 5, genre: "昔話", title: "桃の少年の記録", desc: "勇気をもらえる一冊。", color: "#e91e63", link: "https://amzn.to/example-book1"},
-        {id: 2, threshold: 20, genre: "魔法", title: "初級：光の呪文", desc: "生活を彩る魔法の基礎。", color: "#9c27b0", link: "https://amzn.to/example-book2"}
+    // ★ necotastudioさんのアフィリエイトID組み込み済みベースURL
+    const rakutenBase = "https://hb.afl.rakuten.co.jp/hgc/38bc4499.7d06e22c.38bc449a.2e400495/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F";
+
+    // 野菜・料理データ
+    const masterMenu = [
+        {cat: "キャベツ", name: "お好み焼き", count: 4, keyword: "お好み焼き+冷凍"},
+        {cat: "キャベツ", name: "ロールキャベツ", count: 3, keyword: "ロールキャベツ"},
+        {cat: "キャベツ", name: "コールスローサラダ", count: 2, keyword: "カット野菜+キャベツ"},
+        {cat: "レタス", name: "シーザーサラダ", count: 3, keyword: "レタス+新鮮"},
+        {cat: "ほうれん草", name: "ほうれん草のお浸し", count: 5, keyword: "ほうれん草+冷凍"},
+        {cat: "ほうれん草", name: "サグカレー(ほうれん草)", count: 6, keyword: "ほうれん草+カレー"},
+        {cat: "ケール", name: "青汁（1杯/1袋）", count: 10, keyword: "青汁+ケール"},
+        {cat: "ケール", name: "ケールチップス", count: 8, keyword: "ケール+乾燥"},
+        {cat: "白菜", name: "餃子 (10個程度)", count: 2, keyword: "ぎょうざ+白菜"},
+        {cat: "白菜", name: "白菜の浅漬け", count: 4, keyword: "白菜+漬物"},
+        {cat: "白菜", name: "小松菜のスムージー", count: 7, keyword: "小松菜+新鮮"}
     ];
+
+    // 本のデータ
+    const bookData = [
+        {id: 1, threshold: 5, genre: "昔話", title: "緑の少年の記録", desc: "キャベツから生まれた少年が鬼を退治する物語。", color: "#e91e63", keyword: "昔話+本"},
+        {id: 2, threshold: 25, genre: "魔法", title: "光を灯す呪文", desc: "暗い夜道を緑の光で照らす、初心者向けの魔法書。", color: "#9c27b0", keyword: "魔法+本"},
+        {id: 3, threshold: 60, genre: "ミステリー", title: "消えたレタスの謎", desc: "キッチンから消えたレタスを追う名探偵の事件簿。", color: "#3f51b5", keyword: "ミステリー+小説"},
+        {id: 4, threshold: 120, genre: "冒険", title: "ジャングルの深淵", desc: "巨大な葉が茂る未踏の地の探検記録。", color: "#009688", keyword: "冒険+本"},
+        {id: 5, threshold: 250, genre: "伝説", title: "聖なる青汁の剣", desc: "選ばれしベジタリアンだけが抜ける伝説の剣の物語。", color: "#ff5722", keyword: "伝説+ファンタジー"}
+    ];
+
+    function filterMenu() {
+        const cat = document.getElementById('category-filter').value;
+        const select = document.getElementById('food-select');
+        select.innerHTML = "";
+        masterMenu.forEach(item => {
+            if (cat === "all" || item.cat === cat) {
+                const opt = document.createElement('option');
+                opt.value = item.count;
+                opt.text = `${item.name} (+${item.count}枚)`;
+                opt.setAttribute('data-link', rakutenBase + encodeURIComponent(item.keyword) + "%2F");
+                select.appendChild(opt);
+            }
+        });
+    }
 
     function eat() {
         const select = document.getElementById('food-select');
+        if (!select.value) return;
         const count = parseInt(select.value);
         const foodName = select.options[select.selectedIndex].text;
-        const affLink = select.options[select.selectedIndex].getAttribute('data-link');
+        const rakutenLink = select.options[select.selectedIndex].getAttribute('data-link');
 
         totalLeaves += count;
         document.getElementById('leaf-count').innerText = totalLeaves;
 
-        // パネル表示（野菜）
         showPanel(`
-            <h3 style="color:var(--dark-green)">🌿 ${foodName} を食べた！</h3>
-            <p>合計 ${totalLeaves} 枚になりました。</p>
+            <h3 style="color:var(--dark-green); margin:0;">🌿 ${foodName} を記録！</h3>
+            <p>本棚に${count}枚の葉っぱが蓄積されました。</p>
             <div class="affiliate-box">
-                おすすめの葉物はこちら：<br>
-                <a href="${affLink}" class="affiliate-link" target="_blank">商品をチェックする</a>
+                <a href="${rakutenLink}" class="affiliate-link" target="_blank">【楽天】この野菜をお取り寄せ ➔</a>
             </div>
-        `, `今日、Leafy Libraryで「${foodName}」を記録したよ！合計${totalLeaves}枚！ #necotastudio #LeafyLibrary`);
+        `, `Leafy Libraryで「${foodName}」を記録！合計${totalLeaves}枚！ #necotastudio #楽天`);
 
         checkUnlock();
     }
@@ -145,39 +256,34 @@
         bookData.forEach(book => {
             if (totalLeaves >= book.threshold && !unlockedIds.has(book.id)) {
                 unlockedIds.add(book.id);
-                addBookToShelf(book);
+                const shelf = document.getElementById('shelf');
+                const b = document.createElement('div');
+                b.className = 'book';
+                b.style.backgroundColor = book.color;
+                b.onclick = () => {
+                    const bookLink = rakutenBase + encodeURIComponent(book.keyword) + "%2F";
+                    showPanel(`
+                        <span style="font-size:0.7rem; background:var(--primary-green); color:white; padding:2px 8px; border-radius:10px;">${book.genre}</span>
+                        <h3 style="margin:10px 0;">『${book.title}』</h3>
+                        <p style="font-size:0.9rem;">${book.desc}</p>
+                        <div class="affiliate-box">
+                            <a href="${bookLink}" class="affiliate-link" target="_blank">【楽天ブックス】関連本を探す ➔</a>
+                        </div>
+                    `, `新しい本『${book.title}』をアンロックしたよ！ #necotastudio #LeafyLibrary`);
+                };
+                shelf.appendChild(b);
             }
         });
     }
 
-    function addBookToShelf(book) {
-        const shelf = document.getElementById('shelf');
-        const bookDiv = document.createElement('div');
-        bookDiv.className = 'book';
-        bookDiv.style.backgroundColor = book.color;
-        bookDiv.onclick = () => {
-            showPanel(`
-                <span style="font-size:0.8rem; background:var(--primary-green); color:white; padding:2px 8px; border-radius:10px;">${book.genre}</span>
-                <h3 style="margin:10px 0;">『${book.title}』</h3>
-                <p>${book.desc}</p>
-                <div class="affiliate-box">
-                    この本に似た世界観を読む：<br>
-                    <a href="${book.link}" class="affiliate-link" target="_blank">Amazonで本を探す</a>
-                </div>
-            `, `新しい本『${book.title}』をアンロックしたよ！ #necotastudio #LeafyLibrary`);
-        };
-        shelf.appendChild(bookDiv);
-    }
-
     function showPanel(html, shareText) {
-        const panel = document.getElementById('display-panel');
         document.getElementById('panel-content').innerHTML = html;
-        panel.style.display = 'block';
-
-        // Xシェアリンク生成
-        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
-        document.getElementById('share-x').href = xUrl;
+        document.getElementById('display-panel').style.display = 'block';
+        document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
     }
+
+    // 初期化
+    filterMenu();
 </script>
 
 </body>
