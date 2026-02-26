@@ -30,10 +30,19 @@
             background-color: var(--primary-green);
             color: white;
             width: 100%;
-            padding: 20px 0;
+            padding: 30px 0;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+
+        .header-logo {
+            width: 80px; height: 80px; border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-bottom: 10px; background: white;
+            object-fit: cover;
+        }
+
+        .stats { font-size: 1.5rem; margin: 15px 0; font-weight: 900; }
 
         .bookshelf {
             width: 90%; max-width: 500px; background-color: var(--wood-brown);
@@ -54,6 +63,7 @@
             width: 85%; max-width: 480px; background: white; padding: 20px;
             border-radius: 20px; border: 3px solid var(--primary-green);
             margin: 15px 0; text-align: center; display: none; animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .sns-buttons { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
@@ -71,15 +81,15 @@
         .btn-eat { background-color: var(--primary-green); color: white; border: none; cursor: pointer; font-weight: 900; box-shadow: 0 4px 0 var(--dark-green); }
         .btn-eat:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--dark-green); }
 
-        .stats { font-size: 1.5rem; margin: 15px 0; font-weight: 900; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="margin:0;">🌿 Leafy Library</h1>
-    <small>LL - 菜もの貯蔵庫 by necotastudio</small>
+    <img src="hamono.png" alt="Leafy Library ロゴ" class="header-logo" onerror="this.style.display='none';">
+    <h1 style="margin:0;">Leafy Library</h1>
+    <small>LL - 世界の葉物野菜貯蔵庫 by necotastudio</small>
 </header>
 
 <div class="stats">総葉っぱ数: <span id="leaf-count">0</span> 枚</div>
@@ -97,13 +107,11 @@
 <div class="controls">
     <label>① カテゴリを選ぶ</label>
     <select id="category-filter" onchange="filterMenu()">
-        <option value="そのまま">そのまま食べる（サラダ等）</option>
-        <option value="ジュース">飲み物（ジュース・スープ）</option>
-        <option value="キャベツ">キャベツ系（料理）</option>
-        <option value="レタス">レタス系（料理）</option>
-        <option value="ほうれん草">ほうれん草系（料理）</option>
-        <option value="ケール">ケール・青汁系</option>
-        <option value="白菜">白菜・小松菜・その他</option>
+        <option value="基本">基本のサラダ・生食</option>
+        <option value="欧州">欧州の煮込み・包み料理</option>
+        <option value="東洋">アジアの炒め・中華料理</option>
+        <option value="和食">日本の伝統・和え物・天ぷら</option>
+        <option value="液体">飲み物・スープ・青汁</option>
     </select>
 
     <label>② 具体的なメニューを選ぶ</label>
@@ -117,30 +125,38 @@
     let unlockedIds = new Set();
     const rakutenBase = "https://hb.afl.rakuten.co.jp/hgc/38bc4499.7d06e22c.38bc449a.2e400495/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F";
 
+    // 全世界の葉物料理マスターメニュー
     const masterMenu = [
-        // --- そのまま食べる ---
-        {cat: "そのまま", name: "生野菜サラダ(小)", count: 2, keyword: "ミックスサラダ"},
-        {cat: "そのまま", name: "生野菜サラダ(大)", count: 5, keyword: "サラダ+野菜"},
-        {cat: "そのまま", name: "温野菜・蒸し野菜", count: 6, keyword: "温野菜"},
-        // --- 飲み物・スープ ---
-        {cat: "ジュース", name: "野菜ジュース(1本)", count: 3, keyword: "野菜ジュース"},
-        {cat: "ジュース", name: "野菜たっぷりスープ", count: 4, keyword: "野菜スープ"},
-        {cat: "ジュース", name: "グリーンスムージー", count: 7, keyword: "スムージー+冷凍"},
-        {cat: "ジュース", name: "ポタージュ", count: 2, keyword: "ポタージュ+野菜"},
-        // --- 料理系 ---
-        {cat: "キャベツ", name: "お好み焼き", count: 4, keyword: "お好み焼き"},
-        {cat: "キャベツ", name: "ロールキャベツ", count: 3, keyword: "ロールキャベツ"},
-        {cat: "レタス", name: "レタスチャーハン", count: 2, keyword: "レタス"},
-        {cat: "ほうれん草", name: "ほうれん草のお浸し", count: 5, keyword: "ほうれん草"},
-        {cat: "ケール", name: "青汁（1杯/1袋）", count: 10, keyword: "青汁+ケール"},
-        {cat: "白菜", name: "餃子", count: 2, keyword: "餃子"},
-        {cat: "白菜", name: "小松菜の煮浸し", count: 4, keyword: "小松菜"}
+        {cat: "基本", name: "シーザーサラダ / レタスサラダ", count: 3, keyword: "ロメインレタス"},
+        {cat: "基本", name: "コールスロー (キャベツ)", count: 3, keyword: "コールスロー"},
+        {cat: "基本", name: "サンチュ / 巻き野菜", count: 4, keyword: "サンチュ"},
+        {cat: "基本", name: "チョレギサラダ", count: 4, keyword: "チョレギサラダ"},
+        {cat: "欧州", name: "ロールキャベツ / ガルムシ", count: 5, keyword: "ロールキャベツ"},
+        {cat: "欧州", name: "ケールチップス / ベイクドケール", count: 6, keyword: "ケール+チップス"},
+        {cat: "欧州", name: "ほうれん草のラザニア / キッシュ", count: 5, keyword: "ほうれん草+冷凍"},
+        {cat: "欧州", name: "ポトフ / ボルシチ (キャベツ多め)", count: 4, keyword: "ボルシチ"},
+        {cat: "東洋", name: "空芯菜炒め (カンコン炒め)", count: 6, keyword: "空芯菜"},
+        {cat: "東洋", name: "青椒肉絲 / 回鍋肉 (ピーマン・キャベツ)", count: 4, keyword: "回鍋肉"},
+        {cat: "東洋", name: "餃子 / 春巻き (白菜・ニラ多め)", count: 3, keyword: "餃子"},
+        {cat: "東洋", name: "八宝菜 / 中華丼", count: 5, keyword: "八宝菜"},
+        {cat: "東洋", name: "ナムル / ビビンバの具", count: 4, keyword: "ナムル+セット"},
+        {cat: "和食", name: "お浸し / 胡麻和え (ほうれん草等)", count: 5, keyword: "ほうれん草+お浸し"},
+        {cat: "和食", name: "浅漬け / お新香 (白菜・野沢菜)", count: 2, keyword: "白菜+漬物"},
+        {cat: "和食", name: "天ぷら (明日葉・大葉・山菜)", count: 4, keyword: "山菜+天ぷら"},
+        {cat: "和食", name: "お好み焼き (キャベツ大量)", count: 5, keyword: "お好み焼き"},
+        {cat: "液体", name: "100%青汁 (ケール・大麦若葉)", count: 10, keyword: "青汁"},
+        {cat: "液体", name: "グリーンスムージー / パセリジュース", count: 7, keyword: "スムージー"},
+        {cat: "液体", name: "具だくさん味噌汁 (葉物多め)", count: 3, keyword: "味噌汁+フリーズドライ"},
+        {cat: "液体", name: "薬膳スープ / ハーブティー", count: 2, keyword: "薬膳スープ"}
     ];
 
+    // 図書館の蔵書データ
     const bookData = [
-        {id: 1, threshold: 5, genre: "昔話", title: "緑の少年の記録", desc: "キャベツから生まれた少年の物語。", color: "#e91e63", keyword: "昔話+本"},
-        {id: 2, threshold: 25, genre: "魔法", title: "光を灯す呪文", desc: "初心者向けの魔法書。", color: "#9c27b0", keyword: "魔法+本"},
-        {id: 3, threshold: 60, genre: "ミステリー", title: "消えたレタスの謎", desc: "消えたレタスを追う事件簿。", color: "#3f51b5", keyword: "ミステリー+小説"}
+        {id: 1, threshold: 10, genre: "昔話", title: "緑の少年の記録", desc: "キャベツから生まれた少年の物語。", color: "#e91e63", keyword: "昔話+本"},
+        {id: 2, threshold: 50, genre: "魔法", title: "光を灯す呪文", desc: "初心者向けの魔法書。", color: "#9c27b0", keyword: "魔法+本"},
+        {id: 3, threshold: 150, genre: "歴史", title: "ナイルの庭園", desc: "古代エジプトで神聖視されたレタスの歴史。", color: "#795548", keyword: "古代エジプト+歴史"},
+        {id: 4, threshold: 300, genre: "冒険", title: "アマゾンの巨大葉", desc: "人が乗れるほど巨大な葉を求めた探検記。", color: "#009688", keyword: "冒険+植物"},
+        {id: 5, threshold: 600, genre: "伝説", title: "翡翠の森の司書", desc: "万の葉を愛した伝説の司書が残した究極のレシピ。", color: "#00695c", keyword: "伝説+ファンタジー"}
     ];
 
     function filterMenu() {
@@ -170,10 +186,11 @@
 
         showPanel(`
             <h3 style="color:var(--dark-green); margin:0;">🌿 ${foodName} を記録！</h3>
+            <p>現在の蔵書は ${totalLeaves} 枚です。</p>
             <div class="affiliate-box">
                 <a href="${rakutenLink}" class="affiliate-link" target="_blank">【楽天】これをチェック ➔</a>
             </div>
-        `, `Leafy Libraryで「${foodName}」を記録！合計${totalLeaves}枚！ #necotastudio #楽天`);
+        `, `Leafy Libraryで「${foodName}」を記録！合計${totalLeaves}枚の葉を貯蔵中！ #necotastudio #葉物野菜`);
 
         checkUnlock();
     }
@@ -185,9 +202,15 @@
                 const shelf = document.getElementById('shelf');
                 const b = document.createElement('div');
                 b.className = 'book'; b.style.backgroundColor = book.color;
+                b.title = book.title;
                 b.onclick = () => {
                     const bookLink = rakutenBase + encodeURIComponent(book.keyword) + "%2F";
-                    showPanel(`<h3>📖『${book.title}』</h3><p>${book.desc}</p><div class="affiliate-box"><a href="${bookLink}" class="affiliate-link" target="_blank">楽天ブックス ➔</a></div>`, `新刊『${book.title}』をアンロック！ #necotastudio`);
+                    showPanel(`
+                        <h3>📖『${book.title}』</h3>
+                        <p>ジャンル: ${book.genre}</p>
+                        <p>${book.desc}</p>
+                        <div class="affiliate-box"><a href="${bookLink}" class="affiliate-link" target="_blank">関連書籍を検索 ➔</a></div>
+                    `, `新刊『${book.title}』をアンロック！ #necotastudio #LeafyLibrary`);
                 };
                 shelf.appendChild(b);
             }
@@ -200,6 +223,7 @@
         document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
     }
 
+    // 初期化
     filterMenu();
 </script>
 </body>
