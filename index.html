@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leafy Library - necotastudio</title>
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --dark-green: #2E7D32;
+            --wood-brown: #5D4037;
+            --paper-white: #F5F5DC;
+            --x-black: #000000;
+            --insta-pink: #E1306C;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--paper-white);
+            color: var(--wood-brown);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 100px;
+        }
+
+        header {
+            background-color: var(--primary-green);
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        /* 本棚 */
+        .bookshelf {
+            width: 90%; max-width: 500px; background-color: var(--wood-brown);
+            padding: 20px 15px; border-radius: 8px; margin: 20px 0;
+            min-height: 100px; display: flex; flex-wrap: wrap; gap: 8px;
+            border-bottom: 12px solid #3e2723; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+        }
+
+        .book {
+            width: 20px; height: 75px; border-left: 3px solid rgba(255,255,255,0.2);
+            border-radius: 3px; cursor: pointer; transition: all 0.2s;
+        }
+        .book:hover { transform: translateY(-10px); }
+
+        /* ポップアップ/詳細エリア */
+        #display-panel {
+            width: 85%; max-width: 480px; background: white; padding: 20px;
+            border-radius: 15px; border: 2px solid var(--primary-green);
+            margin: 15px 0; text-align: center; display: none; animation: fadeIn 0.3s;
+        }
+
+        /* SNSボタン */
+        .sns-buttons { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
+        .btn-sns {
+            padding: 8px 15px; border-radius: 20px; border: none; color: white;
+            font-size: 0.8rem; cursor: pointer; text-decoration: none;
+        }
+        .btn-x { background-color: var(--x-black); }
+        .btn-insta { background-color: var(--insta-pink); }
+
+        /* アフィリエイト枠 */
+        .affiliate-box {
+            margin-top: 15px; padding: 10px; border: 1px dashed var(--primary-green);
+            background-color: #f0fff0; font-size: 0.9rem;
+        }
+        .affiliate-link { color: var(--dark-green); font-weight: bold; text-decoration: underline; }
+
+        /* 入力エリア */
+        .controls { width: 90%; max-width: 500px; text-align: center; margin-top: 20px; }
+        select, button { padding: 12px; margin: 5px; border-radius: 25px; font-size: 16px; }
+        .btn-eat { background-color: var(--primary-green); color: white; border: none; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 style="margin:0;">🌿 Leafy Library</h1>
+    <small>LL - 菜もの貯蔵庫 by necotastudio</small>
+</header>
+
+<div style="margin-top:10px;">
+    総葉っぱ数: <span id="leaf-count" style="font-size:1.5rem; font-weight:bold;">0</span> 枚
+</div>
+
+<div class="bookshelf" id="shelf"></div>
+
+<div id="display-panel">
+    <div id="panel-content"></div>
+    
+    <div class="sns-buttons">
+        <a id="share-x" class="btn-sns btn-x" target="_blank">Xで報告</a>
+        <a href="https://www.instagram.com/necotastudio" target="_blank" class="btn-sns btn-insta">Insta報告</a>
+    </div>
+</div>
+
+<div class="controls">
+    <select id="food-select">
+        <option value="1" data-link="https://amzn.to/example-lettuce">レタス (1枚)</option>
+        <option value="4" data-link="https://amzn.to/example-okonomiyaki">お好み焼き (4枚)</option>
+        <option value="8" data-link="https://amzn.to/example-juice">野菜ジュース (8枚)</option>
+        <option value="10" data-link="https://amzn.to/example-aojiru">青汁 (10枚)</option>
+    </select>
+    <button class="btn-eat" onclick="eat()">野菜を記録する！</button>
+</div>
+
+<script>
+    let totalLeaves = 0;
+    let unlockedIds = new Set();
+
+    const bookData = [
+        {id: 1, threshold: 5, genre: "昔話", title: "桃の少年の記録", desc: "勇気をもらえる一冊。", color: "#e91e63", link: "https://amzn.to/example-book1"},
+        {id: 2, threshold: 20, genre: "魔法", title: "初級：光の呪文", desc: "生活を彩る魔法の基礎。", color: "#9c27b0", link: "https://amzn.to/example-book2"}
+    ];
+
+    function eat() {
+        const select = document.getElementById('food-select');
+        const count = parseInt(select.value);
+        const foodName = select.options[select.selectedIndex].text;
+        const affLink = select.options[select.selectedIndex].getAttribute('data-link');
+
+        totalLeaves += count;
+        document.getElementById('leaf-count').innerText = totalLeaves;
+
+        // パネル表示（野菜）
+        showPanel(`
+            <h3 style="color:var(--dark-green)">🌿 ${foodName} を食べた！</h3>
+            <p>合計 ${totalLeaves} 枚になりました。</p>
+            <div class="affiliate-box">
+                おすすめの葉物はこちら：<br>
+                <a href="${affLink}" class="affiliate-link" target="_blank">商品をチェックする</a>
+            </div>
+        `, `今日、Leafy Libraryで「${foodName}」を記録したよ！合計${totalLeaves}枚！ #necotastudio #LeafyLibrary`);
+
+        checkUnlock();
+    }
+
+    function checkUnlock() {
+        bookData.forEach(book => {
+            if (totalLeaves >= book.threshold && !unlockedIds.has(book.id)) {
+                unlockedIds.add(book.id);
+                addBookToShelf(book);
+            }
+        });
+    }
+
+    function addBookToShelf(book) {
+        const shelf = document.getElementById('shelf');
+        const bookDiv = document.createElement('div');
+        bookDiv.className = 'book';
+        bookDiv.style.backgroundColor = book.color;
+        bookDiv.onclick = () => {
+            showPanel(`
+                <span style="font-size:0.8rem; background:var(--primary-green); color:white; padding:2px 8px; border-radius:10px;">${book.genre}</span>
+                <h3 style="margin:10px 0;">『${book.title}』</h3>
+                <p>${book.desc}</p>
+                <div class="affiliate-box">
+                    この本に似た世界観を読む：<br>
+                    <a href="${book.link}" class="affiliate-link" target="_blank">Amazonで本を探す</a>
+                </div>
+            `, `新しい本『${book.title}』をアンロックしたよ！ #necotastudio #LeafyLibrary`);
+        };
+        shelf.appendChild(bookDiv);
+    }
+
+    function showPanel(html, shareText) {
+        const panel = document.getElementById('display-panel');
+        document.getElementById('panel-content').innerHTML = html;
+        panel.style.display = 'block';
+
+        // Xシェアリンク生成
+        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
+        document.getElementById('share-x').href = xUrl;
+    }
+</script>
+
+</body>
+</html>
