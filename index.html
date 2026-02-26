@@ -6,7 +6,6 @@
     <title>Leafy Library | necotastudio</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <style>
         :root {
             --primary-green: #4CAF50;
@@ -18,37 +17,25 @@
         body { font-family: 'Zen Maru Gothic', sans-serif; background-color: var(--paper-white); color: var(--wood-brown); margin: 0; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; }
         header { background: var(--primary-green); color: white; width: 100%; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
         .back-home { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid white; padding: 4px 10px; border-radius: 20px; font-weight: bold; background: rgba(0,0,0,0.1); cursor: pointer; }
-        
         .container { width: 95%; max-width: 500px; margin: 10px 0; box-sizing: border-box; }
-        
-        /* ステータス */
         .status-box { background: white; padding: 15px; border-radius: 20px; text-align: center; border: 2px solid #ddd; }
         .leaf-display { font-size: 2rem; font-weight: 900; color: var(--dark-green); margin: 5px 0; }
         .limit-bar-container { background: #eee; height: 8px; border-radius: 4px; margin-top: 4px; overflow: hidden; }
         .limit-bar { background: var(--primary-green); height: 100%; width: 0%; transition: 0.3s; }
-
-        /* 本棚 */
         .bookshelf { background-color: var(--wood-brown); padding: 15px; border-radius: 12px; min-height: 80px; display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 15px solid #3e2723; box-shadow: inset 0 -5px 15px rgba(0,0,0,0.4); }
         .book-spine { width: 18px; height: 65px; border-left: 2px solid rgba(255,255,255,0.2); border-radius: 2px; cursor: pointer; transition: 0.2s; }
         .book-spine:hover { transform: translateY(-10px); }
         .glow-l { box-shadow: 0 0 12px var(--rare-l); border: 1px solid white; }
-
-        /* 入力 */
         .input-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 3px solid var(--primary-green); }
         .m-btn { flex: 1; padding: 10px; border: 2px solid var(--primary-green); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: inherit; }
         .m-btn.active { background: var(--primary-green); color: white; }
         .count-btn { padding: 15px 0; border-radius: 12px; border: 2px solid var(--primary-green); background: white; color: var(--dark-green); font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 0 var(--primary-green); }
         .count-btn:active { transform: translateY(3px); box-shadow: none; }
-
-        /* フッター・報告 */
         .report-box { background: #E3F2FD; padding: 15px; border-radius: 15px; text-align: center; margin-top: 20px; border: 1px dashed #2196F3; }
         .share-btn { background: #000; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 10px; }
-        
         .ad-space { background: #fff; border: 1px solid #eee; padding: 20px; margin-top: 20px; border-radius: 15px; text-align: center; color: #888; font-size: 0.8rem; }
-        
         .footer-links { margin-top: 30px; text-align: center; font-size: 0.8rem; }
         .footer-links a { color: var(--wood-brown); margin: 0 10px; text-decoration: none; font-weight: bold; }
-
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index: 100; display:none; }
         #panel { position: fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:85%; max-width:400px; background:white; border-radius:30px; padding:30px; z-index: 101; display:none; text-align:center; border: 6px solid var(--primary-green); }
     </style>
@@ -86,7 +73,7 @@
         <button class="count-btn" onclick="earnLeaves(10)">+10</button>
         <button class="count-btn" style="background:#ff9800; color:white;" onclick="earnLeaves(30)">+30</button>
     </div>
-    <button id="undo-btn" class="btn-undo" onclick="undoLast()" disabled style="float:right; margin-top:10px; padding:5px 15px; border-radius:15px; background:#f44336; color:white; border:none; cursor:pointer;">1つ戻す</button>
+    <button id="undo-btn" onclick="undoLast()" disabled style="float:right; margin-top:10px; padding:5px 15px; border-radius:15px; background:#f44336; color:white; border:none; cursor:pointer;">1つ戻す</button>
 </div>
 
 <div class="container report-box">
@@ -95,8 +82,10 @@
 </div>
 
 <div class="container ad-space">
-    <i class="fas fa-shopping-basket"></i> <b>おすすめの野菜・調理器具</b><br>
-    <div style="margin-top:10px; font-size:0.7rem;">(ここにAmazonや楽天のアフィリエイトリンクを貼れます)</div>
+    <i class="fas fa-shopping-basket"></i> <b>おすすめの葉物野菜・道具</b><br>
+    <div style="margin-top:10px; font-size:0.7rem;">
+        <a href="https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fwww.rakuten.co.jp%2F" target="_blank" style="color: #4CAF50; text-decoration: none;">楽天で新鮮な葉っぱを見る 🌿</a>
+    </div>
 </div>
 
 <div class="container">
@@ -124,20 +113,32 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // データ設定
-    const vData = { "定番": ["キャベツ", "レタス", "白菜", "ほうれん草"], "香味": ["大葉", "茗荷", "ニラ"], "サラダ": ["パクチー", "ケール"] };
-    const dData = { "料理": ["サラダ", "野菜炒め", "青汁", "スムージー"] };
+    // --- 厳選・葉っぱデータ ---
+    const vData = { 
+        "定番葉物": ["キャベツ", "レタス", "白菜", "ほうれん草", "小松菜", "チンゲン菜"],
+        "香味・ハーブ": ["大葉", "茗荷", "ニラ", "パクチー", "バジル", "パセリ", "ルッコラ"],
+        "サラダ葉": ["ケール", "水菜", "サニーレタス", "ベビーリーフ", "セロリ葉", "トレビス"],
+        "山菜・その他": ["明日葉", "モロヘイヤ", "豆苗", "春菊"]
+    };
+    const dData = { 
+        "和風の葉": ["お浸し", "胡麻和え", "浅漬け", "春菊の天ぷら", "大葉包み焼き"],
+        "洋風の葉": ["シーザーサラダ", "ロールキャベツ", "バジルパスタ", "ほうれん草ソテー"],
+        "液状の葉": ["青汁", "スムージー", "葉野菜スープ"]
+    };
     const rarities = { C: { color: "#9e9e9e", price: 20 }, U: { color: "#2196f3", price: 100 }, R: { color: "#9c27b0", price: 300 }, E: { color: "#ff9800", price: 800 }, L: { color: "#d4af37", price: 2500 } };
+    
+    // --- ぼかしたタイトルに変更 ---
     const bookMaster = [
-        { id:1, title:"キャベツ王朝の記録", rare:"C", desc:"緑の帝国の歴史。" },
-        { id:2, title:"光合成のパルス", rare:"U", desc:"光を力に変えるメカニズム。" },
-        { id:5, title:"翡翠の司書", rare:"L", desc:"necotastudio描き下ろし作品。" }
+        { id: 1, title: "キャベツと鬼退治の旅", rare: "C", desc: "大きなキャベツの中から生まれた少年が、お供を連れて鬼を退治する不思議な昔話。", affLink: "https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgp-itcl%2F10000040%2F" },
+        { id: 2, title: "森の魔法使いと緑の杖", rare: "U", desc: "魔法学校に通う少年が、葉っぱを操る魔法でピンチを切り抜ける冒険ファンタジー。", affLink: "https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbaroness%2Ff600%2F" },
+        { id: 3, title: "迷宮のレタス姫", rare: "R", desc: "高い塔に幽閉された姫が、長い髪を使って逃げ出す…のではなく、レタスを育てて生き延びる物語。", affLink: "https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17354385%2F" },
+        { id: 4, title: "銀河へ飛ぶハーブ船", rare: "E", desc: "宇宙を旅する船乗りたちが、香りの力で星々を救うSFファンタジー大作。", affLink: "https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fwww.rakuten.co.jp%2F" },
+        { id: 5, title: "翡翠の司書と禁断の葉", rare: "L", desc: "necotastudio描き下ろし。図書館の奥深くに眠る「世界を緑に変える葉」を巡る壮大な物語。", affLink: "https://hb.afl.rakuten.co.jp/hgc/43632f05.42a42095.43632f06.f6236b28/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17354385%2F" }
     ];
 
     let myLeaves = 0, myBooks = [], dailyCount = 0, lastAdd = 0, todayStr = new Date().toLocaleDateString();
 
     window.login = () => signInWithPopup(auth, provider);
-
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             document.getElementById('login-btn').style.display = 'none';
@@ -182,39 +183,20 @@
         }
     };
 
+    window.buyBook = async (id) => {
+        const b = bookMaster.find(x => x.id === id);
+        if(myLeaves >= rarities[b.rare].price) {
+            myLeaves -= rarities[b.rare].price; myBooks.push(id);
+            updateUI(); await sync();
+        }
+    };
+
     function updateUI() {
         document.getElementById('leaf-total').innerText = myLeaves;
         document.getElementById('daily-count-txt').innerText = dailyCount;
         document.getElementById('limit-bar').style.width = `${(dailyCount/50)*100}%`;
         renderShelf(); renderStore(); updateXLink();
     }
-
-    function updateXLink() {
-        const text = encodeURIComponent(`Leafy Libraryで今日 ${dailyCount}枚 の葉っぱを集めました！現在の所蔵数は ${myBooks.length}冊 です🌿 #LeafyLibrary #necotastudio`);
-        document.getElementById('x-share').href = `https://twitter.com/intent/tweet?text=${text}`;
-    }
-
-    window.safeGoBack = async () => {
-        const user = auth.currentUser;
-        if (user) await sync();
-        window.location.href = "https://jyonjyon-code.github.io/hirumeshi/";
-    };
-
-    window.switchMode = (m) => {
-        document.getElementById('m-veg').className = m==='veg' ? 'm-btn active' : 'm-btn';
-        document.getElementById('m-dish').className = m==='dish' ? 'm-btn active' : 'm-btn';
-        const catS = document.getElementById('cat-select'); catS.innerHTML = "";
-        const target = m==='veg' ? vData : dData;
-        Object.keys(target).forEach(c => catS.add(new Option(c, c)));
-        updateItemList();
-    };
-
-    window.updateItemList = () => {
-        const cat = document.getElementById('cat-select').value;
-        const itemS = document.getElementById('item-select'); itemS.innerHTML = "";
-        const target = (vData[cat] || dData[cat]);
-        target.forEach(i => itemS.add(new Option(i, i)));
-    };
 
     function renderShelf() {
         const shelf = document.getElementById('my-shelf'); shelf.innerHTML = "";
@@ -224,7 +206,7 @@
             const spine = document.createElement('div');
             spine.className = `book-spine ${b.rare==='L' ? 'glow-l' : ''}`;
             spine.style.backgroundColor = rarities[b.rare].color;
-            spine.onclick = () => showPanel(`<h2>『${b.title}』</h2><p>${b.desc}</p>`);
+            spine.onclick = () => showPanel(b.id);
             shelf.appendChild(spine);
         });
     }
@@ -244,15 +226,53 @@
         });
     }
 
-    window.buyBook = async (id) => {
-        const b = bookMaster.find(x => x.id === id);
-        if(myLeaves >= rarities[b.rare].price) {
-            myLeaves -= rarities[b.rare].price; myBooks.push(id);
-            updateUI(); await sync();
-        }
+    window.showPanel = (bid) => {
+        const b = bookMaster.find(x => x.id === bid);
+        if (!b) return;
+        const html = `
+            <div style="text-align:center;">
+                <span style="background:${rarities[b.rare].color}; color:white; padding:2px 10px; border-radius:10px; font-size:0.7rem;">${b.rare}</span>
+                <h2 style="margin:10px 0; color:var(--dark-green);">『${b.title}』</h2>
+                <div style="background:#fdfdfd; padding:15px; border-radius:15px; border:1px solid #eee; text-align:left; font-size:0.9rem; line-height:1.6; margin-bottom:15px;">${b.desc}</div>
+                <div style="background:#fff0f0; padding:12px; border-radius:15px; border:1px solid #ffcdd2;">
+                    <p style="font-size:0.7rem; color:#d32f2f; margin:0 0 8px 0; font-weight:bold;">＼ 関連アイテムを楽天でチェック ／</p>
+                    <a href="${b.affLink}" target="_blank" style="text-decoration:none;">
+                        <button style="background:#bf0000; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%; font-size:1rem;"><i class="fas fa-shopping-cart"></i> 楽天で探す</button>
+                    </a>
+                </div>
+            </div>`;
+        document.getElementById('panel-content').innerHTML = html;
+        document.getElementById('panel').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
     };
 
-    window.showPanel = (html) => { document.getElementById('panel-content').innerHTML = html; document.getElementById('panel').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; };
+    window.switchMode = (m) => {
+        document.getElementById('m-veg').className = m==='veg' ? 'm-btn active' : 'm-btn';
+        document.getElementById('m-dish').className = m==='dish' ? 'm-btn active' : 'm-btn';
+        const catS = document.getElementById('cat-select'); catS.innerHTML = "";
+        const target = m==='veg' ? vData : dData;
+        Object.keys(target).forEach(c => catS.add(new Option(c, c)));
+        updateItemList();
+    };
+
+    window.updateItemList = () => {
+        const cat = document.getElementById('cat-select').value;
+        const itemS = document.getElementById('item-select'); itemS.innerHTML = "";
+        const target = (vData[cat] || dData[cat]);
+        target.forEach(i => itemS.add(new Option(i, i)));
+    };
+
+    function updateXLink() {
+        const text = encodeURIComponent(`Leafy Libraryで今日 ${dailyCount}枚 の葉っぱを集めました🌿 現在の所蔵数は ${myBooks.length}冊！ #LeafyLibrary #necotastudio`);
+        document.getElementById('x-share').href = `https://twitter.com/intent/tweet?text=${text}`;
+    }
+
+    window.safeGoBack = async () => {
+        const user = auth.currentUser;
+        if (user) await sync();
+        window.location.href = "https://jyonjyon-code.github.io/hirumeshi/";
+    };
+
     window.closePanel = () => { document.getElementById('panel').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; };
 
     switchMode('veg');
