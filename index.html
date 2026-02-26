@@ -56,7 +56,6 @@
             width: 22px; height: 80px; border-left: 3px solid rgba(255,255,255,0.2);
             border-radius: 3px; cursor: pointer; transition: all 0.2s ease;
         }
-
         .book:hover { transform: translateY(-15px); box-shadow: 5px 15px 20px rgba(0,0,0,0.4); }
 
         #display-panel {
@@ -66,6 +65,29 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
+        .controls { 
+            width: 90%; max-width: 500px; background: #fff; padding: 20px; 
+            border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            box-sizing: border-box; 
+        }
+
+        .mode-selector {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .btn-mode {
+            flex: 1; padding: 10px; border-radius: 10px; border: 2px solid var(--primary-green);
+            background: white; color: var(--primary-green); font-weight: bold; cursor: pointer;
+        }
+        .btn-mode.active {
+            background: var(--primary-green); color: white;
+        }
+
+        label { font-size: 0.8rem; font-weight: bold; color: var(--dark-green); display: block; margin-top: 10px; text-align: left; }
+        select, button { padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; width: 100%; box-sizing: border-box; font-family: 'Zen Maru Gothic', sans-serif; }
+        
+        .btn-eat { background-color: var(--primary-green); color: white; border: none; cursor: pointer; font-weight: 900; box-shadow: 0 4px 0 var(--dark-green); margin-top: 15px; }
+        .btn-eat:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--dark-green); }
+
         .sns-buttons { margin-top: 15px; display: flex; justify-content: center; gap: 10px; }
         .btn-sns { padding: 10px 20px; border-radius: 25px; border: none; color: white; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
         .btn-x { background-color: #000; }
@@ -73,13 +95,6 @@
 
         .affiliate-box { margin-top: 15px; padding: 12px; border: 2px solid var(--rakuten-red); background-color: #fff5f5; border-radius: 12px; }
         .affiliate-link { color: var(--rakuten-red); font-weight: bold; text-decoration: none; font-size: 0.9rem; }
-
-        .controls { width: 90%; max-width: 500px; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; }
-        label { font-size: 0.8rem; font-weight: bold; color: var(--dark-green); display: block; margin-top: 10px; text-align: left; }
-        select, button { padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; width: 100%; box-sizing: border-box; font-family: 'Zen Maru Gothic', sans-serif; }
-        
-        .btn-eat { background-color: var(--primary-green); color: white; border: none; cursor: pointer; font-weight: 900; box-shadow: 0 4px 0 var(--dark-green); }
-        .btn-eat:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--dark-green); }
 
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
@@ -89,7 +104,7 @@
 <header>
     <img src="hamono.png" alt="Leafy Library ロゴ" class="header-logo" onerror="this.style.display='none';">
     <h1 style="margin:0;">Leafy Library</h1>
-    <small>LL - 世界の葉物野菜貯蔵庫 by necotastudio</small>
+    <small>LL - 世界の葉物野菜目録 by necotastudio</small>
 </header>
 
 <div class="stats">総葉っぱ数: <span id="leaf-count">0</span> 枚</div>
@@ -105,92 +120,144 @@
 </div>
 
 <div class="controls">
-    <label>① カテゴリを選ぶ</label>
-    <select id="category-filter" onchange="filterMenu()">
-        <option value="基本">基本のサラダ・生食</option>
-        <option value="欧州">欧州の煮込み・包み料理</option>
-        <option value="東洋">アジアの炒め・中華料理</option>
-        <option value="和食">日本の伝統・和え物・天ぷら</option>
-        <option value="液体">飲み物・スープ・青汁</option>
-    </select>
+    <div class="mode-selector">
+        <button id="mode-veg" class="btn-mode active" onclick="switchMode('veg')">🥬 野菜から探す</button>
+        <button id="mode-dish" class="btn-mode" onclick="switchMode('dish')">🍳 料理から探す</button>
+    </div>
 
-    <label>② 具体的なメニューを選ぶ</label>
-    <select id="food-select"></select>
-    
-    <button class="btn-eat" onclick="eat()">野菜を記録して蔵書を増やす</button>
+    <div id="veg-ui">
+        <label>① 野菜の分類</label>
+        <select id="veg-cat" onchange="updateVegList()">
+            <option value="定番">定番（キャベツ・レタス等）</option>
+            <option value="和の葉">和の葉（ほうれん草・春菊等）</option>
+            <option value="中華・アジア">中華・アジア（空芯菜等）</option>
+            <option value="洋の葉">西洋・サラダ菜（ケール等）</option>
+            <option value="ハーブ・薬草">ハーブ・薬草（パクチー等）</option>
+            <option value="野草・山菜">野草・山菜（あしたば等）</option>
+        </select>
+        <label>② 具体的な野菜名</label>
+        <select id="veg-list"></select>
+    </div>
+
+    <div id="dish-ui" style="display:none;">
+        <label>① 料理のジャンル</label>
+        <select id="dish-cat" onchange="updateDishList()">
+            <option value="生・サラダ">生食・サラダ</option>
+            <option value="焼・炒">焼き・炒め物</option>
+            <option value="煮・蒸">煮込み・蒸し料理</option>
+            <option value="飲・汁">飲み物・スープ</option>
+        </select>
+        <label>② 具体的なメニュー</label>
+        <select id="dish-list"></select>
+    </div>
+
+    <button class="btn-eat" onclick="recordLeaf()">この葉っぱを蔵書に加える</button>
 </div>
 
 <script>
     let totalLeaves = 0;
     let unlockedIds = new Set();
+    let currentMode = 'veg';
     const rakutenBase = "https://hb.afl.rakuten.co.jp/hgc/38bc4499.7d06e22c.38bc449a.2e400495/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F";
 
-    // 全世界の葉物料理マスターメニュー
-    const masterMenu = [
-        {cat: "基本", name: "シーザーサラダ / レタスサラダ", count: 3, keyword: "ロメインレタス"},
-        {cat: "基本", name: "コールスロー (キャベツ)", count: 3, keyword: "コールスロー"},
-        {cat: "基本", name: "サンチュ / 巻き野菜", count: 4, keyword: "サンチュ"},
-        {cat: "基本", name: "チョレギサラダ", count: 4, keyword: "チョレギサラダ"},
-        {cat: "欧州", name: "ロールキャベツ / ガルムシ", count: 5, keyword: "ロールキャベツ"},
-        {cat: "欧州", name: "ケールチップス / ベイクドケール", count: 6, keyword: "ケール+チップス"},
-        {cat: "欧州", name: "ほうれん草のラザニア / キッシュ", count: 5, keyword: "ほうれん草+冷凍"},
-        {cat: "欧州", name: "ポトフ / ボルシチ (キャベツ多め)", count: 4, keyword: "ボルシチ"},
-        {cat: "東洋", name: "空芯菜炒め (カンコン炒め)", count: 6, keyword: "空芯菜"},
-        {cat: "東洋", name: "青椒肉絲 / 回鍋肉 (ピーマン・キャベツ)", count: 4, keyword: "回鍋肉"},
-        {cat: "東洋", name: "餃子 / 春巻き (白菜・ニラ多め)", count: 3, keyword: "餃子"},
-        {cat: "東洋", name: "八宝菜 / 中華丼", count: 5, keyword: "八宝菜"},
-        {cat: "東洋", name: "ナムル / ビビンバの具", count: 4, keyword: "ナムル+セット"},
-        {cat: "和食", name: "お浸し / 胡麻和え (ほうれん草等)", count: 5, keyword: "ほうれん草+お浸し"},
-        {cat: "和食", name: "浅漬け / お新香 (白菜・野沢菜)", count: 2, keyword: "白菜+漬物"},
-        {cat: "和食", name: "天ぷら (明日葉・大葉・山菜)", count: 4, keyword: "山菜+天ぷら"},
-        {cat: "和食", name: "お好み焼き (キャベツ大量)", count: 5, keyword: "お好み焼き"},
-        {cat: "液体", name: "100%青汁 (ケール・大麦若葉)", count: 10, keyword: "青汁"},
-        {cat: "液体", name: "グリーンスムージー / パセリジュース", count: 7, keyword: "スムージー"},
-        {cat: "液体", name: "具だくさん味噌汁 (葉物多め)", count: 3, keyword: "味噌汁+フリーズドライ"},
-        {cat: "液体", name: "薬膳スープ / ハーブティー", count: 2, keyword: "薬膳スープ"}
+    // --- 野菜マスターデータ ---
+    const vegMaster = [
+        {cat: "定番", name: "キャベツ", count: 3, kw: "キャベツ"},
+        {cat: "定番", name: "レタス（玉・サニー）", count: 3, kw: "レタス"},
+        {cat: "定番", name: "白菜", count: 4, kw: "白菜"},
+        {cat: "和の葉", name: "ほうれん草", count: 5, kw: "ほうれん草"},
+        {cat: "和の葉", name: "小松菜", count: 5, kw: "小松菜"},
+        {cat: "和の葉", name: "春菊", count: 4, kw: "春菊"},
+        {cat: "和の葉", name: "大葉（しそ）", count: 2, kw: "大葉"},
+        {cat: "和の葉", name: "水菜", count: 3, kw: "水菜"},
+        {cat: "中華・アジア", name: "チンゲン菜", count: 5, kw: "チンゲン菜"},
+        {cat: "中華・アジア", name: "空芯菜", count: 6, kw: "空芯菜"},
+        {cat: "中華・アジア", name: "ニラ", count: 3, kw: "ニラ"},
+        {cat: "洋の葉", name: "ケール", count: 8, kw: "ケール"},
+        {cat: "洋の葉", name: "ルッコラ", count: 5, kw: "ルッコラ"},
+        {cat: "洋の葉", name: "クレソン", count: 6, kw: "クレソン"},
+        {cat: "洋の葉", name: "ベビーリーフ", count: 4, kw: "ベビーリーフ"},
+        {cat: "ハーブ・薬草", name: "パクチー", count: 4, kw: "パクチー"},
+        {cat: "ハーブ・薬草", name: "パセリ", count: 3, kw: "パセリ"},
+        {cat: "ハーブ・薬草", name: "バジル", count: 2, kw: "バジル"},
+        {cat: "野草・山菜", name: "明日葉", count: 10, kw: "明日葉"},
+        {cat: "野草・山菜", name: "ふきのとう", count: 6, kw: "ふきのとう"},
+        {cat: "野草・山菜", name: "ヨモギ", count: 5, kw: "ヨモギ"}
     ];
 
-    // 図書館の蔵書データ
+    // --- 料理マスターデータ ---
+    const dishMaster = [
+        {cat: "生・サラダ", name: "シーザーサラダ", count: 4, kw: "シーザーサラダ"},
+        {cat: "生・サラダ", name: "コールスロー", count: 3, kw: "コールスロー"},
+        {cat: "焼・炒", name: "お好み焼き", count: 5, kw: "お好み焼き"},
+        {cat: "焼・炒", name: "野菜炒め", count: 6, kw: "野菜炒め"},
+        {cat: "焼・炒", name: "空芯菜炒め", count: 7, kw: "空芯菜"},
+        {cat: "煮・蒸", name: "ロールキャベツ", count: 5, kw: "ロールキャベツ"},
+        {cat: "煮・蒸", name: "しゃぶしゃぶ・鍋", count: 8, kw: "鍋+野菜"},
+        {cat: "飲・汁", name: "青汁", count: 10, kw: "青汁"},
+        {cat: "飲・汁", name: "グリーンスムージー", count: 7, kw: "スムージー"}
+    ];
+
     const bookData = [
-        {id: 1, threshold: 10, genre: "昔話", title: "緑の少年の記録", desc: "キャベツから生まれた少年の物語。", color: "#e91e63", keyword: "昔話+本"},
-        {id: 2, threshold: 50, genre: "魔法", title: "光を灯す呪文", desc: "初心者向けの魔法書。", color: "#9c27b0", keyword: "魔法+本"},
-        {id: 3, threshold: 150, genre: "歴史", title: "ナイルの庭園", desc: "古代エジプトで神聖視されたレタスの歴史。", color: "#795548", keyword: "古代エジプト+歴史"},
-        {id: 4, threshold: 300, genre: "冒険", title: "アマゾンの巨大葉", desc: "人が乗れるほど巨大な葉を求めた探検記。", color: "#009688", keyword: "冒険+植物"},
-        {id: 5, threshold: 600, genre: "伝説", title: "翡翠の森の司書", desc: "万の葉を愛した伝説の司書が残した究極のレシピ。", color: "#00695c", keyword: "伝説+ファンタジー"}
+        {id: 1, threshold: 10, title: "緑の少年の記録", desc: "キャベツから生まれた少年の物語。", color: "#e91e63", kw: "昔話+本"},
+        {id: 2, threshold: 50, title: "光を灯す呪文", desc: "光合成を促進する禁断の書。", color: "#9c27b0", kw: "植物+魔法"},
+        {id: 3, threshold: 150, title: "ナイルの庭園", desc: "古代から愛された葉物の歴史。", color: "#795548", kw: "エジプト+歴史"},
+        {id: 4, threshold: 400, title: "翡翠の森の司書", desc: "伝説の司書が残した究極の図鑑。", color: "#00695c", kw: "伝説+ファンタジー"}
     ];
 
-    function filterMenu() {
-        const cat = document.getElementById('category-filter').value;
-        const select = document.getElementById('food-select');
-        select.innerHTML = "";
-        masterMenu.forEach(item => {
-            if (item.cat === cat) {
-                const opt = document.createElement('option');
-                opt.value = item.count;
-                opt.text = `${item.name} (+${item.count}枚)`;
-                opt.setAttribute('data-link', rakutenBase + encodeURIComponent(item.keyword) + "%2F");
-                select.appendChild(opt);
-            }
+    function switchMode(mode) {
+        currentMode = mode;
+        document.getElementById('mode-veg').classList.toggle('active', mode === 'veg');
+        document.getElementById('mode-dish').classList.toggle('active', mode === 'dish');
+        document.getElementById('veg-ui').style.display = (mode === 'veg') ? 'block' : 'none';
+        document.getElementById('dish-ui').style.display = (mode === 'dish') ? 'block' : 'none';
+        if(mode === 'veg') updateVegList(); else updateDishList();
+    }
+
+    function updateVegList() {
+        const cat = document.getElementById('veg-cat').value;
+        const list = document.getElementById('veg-list');
+        list.innerHTML = "";
+        vegMaster.filter(v => v.cat === cat).forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.count; opt.text = `${v.name} (+${v.count}枚)`;
+            opt.setAttribute('data-kw', v.kw);
+            list.appendChild(opt);
         });
     }
 
-    function eat() {
-        const select = document.getElementById('food-select');
+    function updateDishList() {
+        const cat = document.getElementById('dish-cat').value;
+        const list = document.getElementById('dish-list');
+        list.innerHTML = "";
+        dishMaster.filter(d => d.cat === cat).forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.count; opt.text = `${d.name} (+${d.count}枚)`;
+            opt.setAttribute('data-kw', d.kw);
+            list.appendChild(opt);
+        });
+    }
+
+    function recordLeaf() {
+        const selectId = currentMode === 'veg' ? 'veg-list' : 'dish-list';
+        const select = document.getElementById(selectId);
         if (!select.value) return;
+
         const count = parseInt(select.value);
-        const foodName = select.options[select.selectedIndex].text;
-        const rakutenLink = select.options[select.selectedIndex].getAttribute('data-link');
+        const name = select.options[select.selectedIndex].text;
+        const kw = select.options[select.selectedIndex].getAttribute('data-kw');
+        const link = rakutenBase + encodeURIComponent(kw) + "%2F";
 
         totalLeaves += count;
         document.getElementById('leaf-count').innerText = totalLeaves;
 
         showPanel(`
-            <h3 style="color:var(--dark-green); margin:0;">🌿 ${foodName} を記録！</h3>
-            <p>現在の蔵書は ${totalLeaves} 枚です。</p>
+            <h3 style="color:var(--dark-green); margin:0;">🌿 「${name}」を収蔵！</h3>
+            <p>現在の総葉っぱ数: ${totalLeaves}枚</p>
             <div class="affiliate-box">
-                <a href="${rakutenLink}" class="affiliate-link" target="_blank">【楽天】これをチェック ➔</a>
+                <a href="${link}" class="affiliate-link" target="_blank">【楽天】${kw} をもっと知る ➔</a>
             </div>
-        `, `Leafy Libraryで「${foodName}」を記録！合計${totalLeaves}枚の葉を貯蔵中！ #necotastudio #葉物野菜`);
+        `, `Leafy Libraryに新着！「${name}」を記録しました。 #necotastudio #葉物野菜`);
 
         checkUnlock();
     }
@@ -202,15 +269,9 @@
                 const shelf = document.getElementById('shelf');
                 const b = document.createElement('div');
                 b.className = 'book'; b.style.backgroundColor = book.color;
-                b.title = book.title;
                 b.onclick = () => {
-                    const bookLink = rakutenBase + encodeURIComponent(book.keyword) + "%2F";
-                    showPanel(`
-                        <h3>📖『${book.title}』</h3>
-                        <p>ジャンル: ${book.genre}</p>
-                        <p>${book.desc}</p>
-                        <div class="affiliate-box"><a href="${bookLink}" class="affiliate-link" target="_blank">関連書籍を検索 ➔</a></div>
-                    `, `新刊『${book.title}』をアンロック！ #necotastudio #LeafyLibrary`);
+                    const link = rakutenBase + encodeURIComponent(book.kw) + "%2F";
+                    showPanel(`<h3>📖『${book.title}』</h3><p>${book.desc}</p><div class="affiliate-box"><a href="${link}" class="affiliate-link" target="_blank">蔵書を検索 ➔</a></div>`, `新刊『${book.title}』をアンロック！ #necotastudio`);
                 };
                 shelf.appendChild(b);
             }
@@ -223,8 +284,7 @@
         document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`;
     }
 
-    // 初期化
-    filterMenu();
+    updateVegList();
 </script>
 </body>
 </html>
