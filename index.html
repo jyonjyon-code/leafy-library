@@ -165,15 +165,16 @@
         { id: 14, title: "トレビスの赤い宝石", rare: "E", desc: "鮮やかな赤色を持つトレビス。それを狙う盗賊と守る村人の知恵比べ。" },
         { id: 15, title: "necotastudio: 創造の葉", rare: "L", desc: "スタジオの誕生秘話と、これから生まれる作品たちのイメージ画集。" },
         { id: 16, title: "春菊の小さな恋", rare: "C", desc: "ほろ苦い想いを抱える少女が、料理を通じて成長する青春短編集。" },
-        { id: 17, title: "大葉の風に乗って", rare: "U", desc: "爽やかな風と共に旅をする、大葉의翼を持った少年たちの物語。" },
+        { id: 17, title: "大葉の風に乗って", rare: "U", desc: "爽やかな風と共に旅をする、大葉の翼を持った少年たちの物語。" },
         { id: 18, title: "モロヘイヤ王国の王冠", rare: "R", desc: "ネバネバした不思議な森の奥にある、モロヘイヤ王国の繁栄の秘密。" },
         { id: 19, title: "明日葉の希望", rare: "E", desc: "今日摘んでも明日には芽吹く。絶望に立ち向かう人々に贈る応援歌。" },
         { id: 20, title: "豆苗の無限ループ", rare: "C", desc: "切ってもまた生えてくる。そんな豆苗のような、終わらない楽しい日常。" }
     ];
 
+    // --- 状態管理用変数 ---
     let myLeaves = 0, myBooks = [], dailyLog = [], currentMode = 'veg', todayStr = new Date().toLocaleDateString("ja-JP");
+    let isDataLoaded = false; // Firebaseからロード済みかどうか
 
-    // 全ての関数をwindowオブジェクトに紐付け、HTMLから呼べるようにする
     window.login = () => signInWithPopup(auth, provider);
     
     onAuthStateChanged(auth, async (user) => {
@@ -197,20 +198,23 @@
                 const d = docSnap.data();
                 myLeaves = d.leaves || 0; 
                 myBooks = d.books || [];
+                // 日付チェック
                 if (d.lastDate === todayStr) {
                     dailyLog = d.dailyLog || [];
                 } else {
                     dailyLog = [];
-                    await sync(); 
+                    // ここでsyncを呼ぶと、ロード完了フラグが立っていないため保存されない（安全策）
                 }
             }
+            isDataLoaded = true; // ロード完了フラグを立てる
+            updateUI();
         } catch (e) { console.error("Load Error:", e); }
-        updateUI();
     }
 
     async function sync() {
         const user = auth.currentUser;
-        if (!user) return;
+        // 未ログイン、またはロード前に保存が走るのを徹底防止
+        if (!user || !isDataLoaded) return;
         try {
             await setDoc(doc(db, "leafy_library", user.uid), { 
                 leaves: myLeaves, books: myBooks, dailyLog: dailyLog, lastDate: todayStr 
@@ -365,7 +369,7 @@
     window.safeGoBack = async (e) => {
         if (e) e.preventDefault();
         const user = auth.currentUser;
-        if (user) {
+        if (user && isDataLoaded) { // データロード済みの場合のみ保存
             const display = document.getElementById('user-display');
             if (display) display.innerText = "保存中...";
             try {
