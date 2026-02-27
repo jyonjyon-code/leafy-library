@@ -14,9 +14,10 @@
             --paper-white: #F5F5DC;
             --rare-c: #9e9e9e; --rare-u: #2196f3; --rare-r: #9c27b0; --rare-e: #ff9800; --rare-l: #d4af37;
         }
-        body { font-family: 'Zen Maru Gothic', sans-serif; background-color: var(--paper-white); color: var(--wood-brown); margin: 0; padding-bottom: 40px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        body { font-family: 'Zen Maru Gothic', sans-serif; background-color: var(--paper-white); color: var(--wood-brown); margin: 0; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
         header { background: var(--primary-green); color: white; width: 100%; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; z-index: 10; }
-        .back-home { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid white; padding: 4px 10px; border-radius: 20px; font-weight: bold; background: rgba(0,0,0,0.1); cursor: pointer; }
+        
+        .back-home { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid white; padding: 6px 12px; border-radius: 20px; font-weight: bold; background: rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; gap: 5px; }
         
         .container { width: 95%; max-width: 500px; margin: 10px 0; box-sizing: border-box; }
         .status-box { background: white; padding: 20px; border-radius: 25px; text-align: center; border: 2px solid #ddd; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -26,9 +27,22 @@
         .go-library { flex: 2; padding: 15px; background: var(--wood-brown); color: white; border-radius: 15px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .share-x { flex: 1; padding: 15px; background: #000; color: white; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+        .login-btn-style { background: #4285F4; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
         .log-container { background: white; border-radius: 20px; border: 1px solid #ddd; padding: 10px; margin-top: 15px; max-height: 200px; overflow-y: auto; text-align: left; }
         .log-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
         .log-delete { color: #ff5252; cursor: pointer; padding: 5px; font-size: 1.1rem; }
+
+        .input-card { background: white; padding: 20px; border-radius: 25px; border: 3px solid var(--primary-green); position: relative; }
+        .m-btn { flex: 1; padding: 10px; border: 2px solid var(--primary-green); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .m-btn.active { background: var(--primary-green); color: white; }
+        
+        /* アフィリエイト誘導バナー風 */
+        .info-tip { font-size: 0.7rem; color: var(--primary-green); text-align: right; margin-top: -10px; margin-bottom: 5px; cursor: pointer; text-decoration: underline; }
+
+        footer { margin-top: 30px; padding: 20px; text-align: center; width: 100%; border-top: 1px solid #ddd; background: #fff; }
+        .footer-home-btn { background: var(--wood-brown); color: white; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 0.9rem; }
+        .copyright { font-size: 0.8rem; color: #999; }
 
         #library-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #3e2723; z-index: 1000; display: none; flex-direction: column; overflow-y: auto; }
         .library-header { background: #2d1b18; color: #d7ccc8; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 11; display: flex; justify-content: space-between; align-items: center; }
@@ -37,10 +51,6 @@
         .book-spine { width: 22px; height: 80px; border-radius: 2px; cursor: pointer; transition: 0.2s; border-left: 3px solid rgba(255,255,255,0.2); }
         .book-spine:hover { transform: translateY(-15px); }
 
-        .input-card { background: white; padding: 20px; border-radius: 25px; border: 3px solid var(--primary-green); }
-        .m-btn { flex: 1; padding: 10px; border: 2px solid var(--primary-green); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: inherit; }
-        .m-btn.active { background: var(--primary-green); color: white; }
-        
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index: 2000; display:none; }
         #panel { position: fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:85%; max-width:400px; background:white; border-radius:30px; padding:30px; z-index: 2001; display:none; text-align:center; border: 6px solid var(--primary-green); }
         .rakuten-btn { background: #bf0000; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 15px; font-size: 1rem; }
@@ -49,19 +59,21 @@
 <body>
 
 <header>
-    <div class="back-home" onclick="safeGoBack()"><i class="fas fa-chevron-left"></i> 戻る</div>
+    <div class="back-home" onclick="safeGoBack()"><i class="fas fa-home"></i> ホーム</div>
     <h1 style="margin:0; font-size: 1.2rem;">Leafy Library</h1>
 </header>
 
 <div class="container status-box">
-    <div id="user-display" style="font-size: 12px; color: #666; margin-bottom: 5px;">読み込み中...</div>
+    <div id="user-display" style="font-size: 14px; font-weight: bold; color: #444; margin-bottom: 8px;">読み込み中...</div>
     <div class="leaf-display">🍃 <span id="leaf-total">0</span> <small style="font-size: 1rem;">枚</small></div>
     
-    <div class="action-btns">
-        <button class="go-library" onclick="openLibrary()"><i class="fas fa-book"></i> 図書室</button>
-        <button class="share-x" onclick="shareOnX()"><i class="fab fa-x-twitter"></i> 報告</button>
+    <div id="logged-in-actions" style="display:none;">
+        <div class="action-btns">
+            <button class="go-library" onclick="openLibrary()"><i class="fas fa-book"></i> 図書室</button>
+            <button class="share-x" onclick="shareOnX()"><i class="fab fa-x-twitter"></i> 報告</button>
+        </div>
     </div>
-    <button id="login-btn" class="m-btn" style="width: 100%; margin-top:15px; display:none;" onclick="login()">Googleログイン</button>
+    <button id="login-btn" class="login-btn-style" style="display:none;" onclick="login()"><i class="fab fa-google"></i> Googleでログイン</button>
 </div>
 
 <div class="container input-card">
@@ -69,16 +81,18 @@
         <button id="m-veg" class="m-btn active" onclick="switchMode('veg')">🥬 種類</button>
         <button id="m-dish" class="m-btn" onclick="switchMode('dish')">🍳 料理</button>
     </div>
+    <div id="shopping-hint" class="info-tip" onclick="openShopping()">🛒 この食材・料理を探す</div>
     <select id="cat-select" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;" onchange="updateItemList()"></select>
     <select id="item-select" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;"></select>
     
-    <div class="counter-ui">
-        <div style="text-align: center;">
-            <div style="font-size: 0.7rem; color: #999; margin-bottom: 5px;">今日集めた分</div>
+    <div style="display: flex; align-items: center; justify-content: space-between; background: #f0f0f0; padding: 10px 20px; border-radius: 15px;">
+        <div style="text-align: left;">
+            <div style="font-size: 0.7rem; color: #999;">今日集めた分</div>
             <div id="daily-count-txt" style="font-size: 1.5rem; font-weight: 900;">0</div>
-            <div style="font-size: 0.6rem; color: #bbb;">上限 50枚</div>
         </div>
-        <button class="ctrl-btn plus" onclick="addEntry()"><i class="fas fa-plus"></i></button>
+        <button onclick="addEntry()" style="background: var(--primary-green); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer;">
+            <i class="fas fa-plus"></i>
+        </button>
     </div>
 
     <div id="log-list" class="log-container">
@@ -90,6 +104,11 @@
     <h3 style="border-left: 5px solid var(--primary-green); padding-left: 10px;">交換所 (Store)</h3>
     <div id="store-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
 </div>
+
+<footer>
+    <button class="footer-home-btn" onclick="safeGoBack()"><i class="fas fa-home"></i> ホームへ戻る</button>
+    <div class="copyright">© necotastudio</div>
+</footer>
 
 <div id="library-page">
     <div class="library-header">
@@ -114,12 +133,22 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    const vData = { "定番葉物": ["キャベツ", "レタス", "白菜", "ほうれん草", "小松菜"], "香味ハーブ": ["大葉", "茗荷", "ニラ", "パクチー", "バジル"], "サラダ葉": ["ケール", "水菜", "ベビーリーフ", "トレビス"], "その他": ["明日葉", "モロヘイヤ", "豆苗", "春菊"] };
-    const dData = { "和風": { "お浸し": 2, "胡麻和え": 2, "浅漬け": 2, "天ぷら": 3 }, "洋風": { "サラダ": 2, "ロールキャベツ": 3, "バジルパスタ": 2 }, "その他": { "青汁": 1, "スムージー": 2, "スープ": 2 } };
+    const vData = { 
+        "定番葉物": ["キャベツ", "レタス", "白菜", "ほうれん草", "小松菜", "チンゲン菜"], 
+        "香味ハーブ": ["大葉", "茗荷", "ニラ", "パクチー", "バジル", "パセリ", "ルッコラ"], 
+        "サラダ葉": ["ケール", "水菜", "ベビーリーフ", "トレビス", "サニーレタス"], 
+        "その他": ["明日葉", "モロヘイヤ", "豆苗", "春菊", "セロリ"] 
+    };
+    
+    const dData = { 
+        "和風": { "お浸し": 2, "胡麻和え": 2, "浅漬け": 2, "天ぷら": 3, "野菜炒め": 3, "白和え": 3, "筑前煮": 3, "冷奴の大葉のせ": 2, "茗荷の甘酢漬け": 2 }, 
+        "洋風": { "サラダ": 2, "ロールキャベツ": 3, "バジルパスタ": 2, "ポトフ": 3, "ほうれん草ソテー": 2, "コールスロー": 2, "ケールチップス": 3, "ラタトゥイユ": 4, "バーニャカウダ": 4 }, 
+        "中華・エスニック": { "青椒肉絲": 3, "回鍋肉": 3, "パクチーサラダ": 3, "空芯菜炒め": 3, "餃子（ニラたっぷり）": 4, "八宝菜": 4, "ガパオライス": 3, "生春巻き": 3 },
+        "スープ・飲み物": { "青汁": 1, "スムージー": 2, "野菜スープ": 2, "ミネストローネ": 3, "味噌汁（葉物入り）": 2, "ポタージュ": 3 }
+    };
 
     const rarities = { C: { color: "#9e9e9e", price: 20 }, U: { color: "#2196f3", price: 100 }, R: { color: "#9c27b0", price: 300 }, E: { color: "#ff9800", price: 800 }, L: { color: "#d4af37", price: 2500 } };
     
-    // 20冊の本のラインナップを復旧
     const bookMaster = [
         { id: 1, title: "キャベツと鬼退治の旅", rare: "C", desc: "キャベツから生まれた少年が、お供を連れて鬼ヶ島を目指す昔話風ファンタジー。" },
         { id: 2, title: "森の魔法使いと緑の杖", rare: "U", desc: "見習い魔法使いが、ほうれん草の杖で村を救う感動の物語。" },
@@ -150,11 +179,13 @@
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             document.getElementById('login-btn').style.display = 'none';
+            document.getElementById('logged-in-actions').style.display = 'block';
             document.getElementById('user-display').innerText = `🌿 ${user.displayName} さん`;
             await loadData(user.uid);
         } else {
-            document.getElementById('login-btn').style.display = 'block';
-            document.getElementById('user-display').innerText = "ログインしてください";
+            document.getElementById('login-btn').style.display = 'flex';
+            document.getElementById('logged-in-actions').style.display = 'none';
+            document.getElementById('user-display').innerText = "ログインして保存";
         }
     });
 
@@ -182,14 +213,11 @@
         const itemName = document.getElementById('item-select').value;
         let points = 1;
         if (currentMode === 'dish') { points = dData[cat][itemName] || 2; }
-
         const currentDailyTotal = dailyLog.reduce((sum, log) => sum + log.val, 0);
         if (currentDailyTotal + points > 50) { alert("1日の上限は50枚です🌿"); return; }
-        
         const entry = { id: Date.now(), name: itemName, val: points };
         dailyLog.unshift(entry);
         myLeaves += points;
-        
         updateUI();
         await sync();
     };
@@ -225,17 +253,11 @@
 
     function renderLog() {
         const list = document.getElementById('log-list');
-        if (dailyLog.length === 0) {
-            list.innerHTML = '<p style="font-size: 0.7rem; color: #ccc; text-align: center;">今日のログはありません</p>';
-            return;
-        }
+        if (dailyLog.length === 0) { list.innerHTML = '<p style="font-size: 0.7rem; color: #ccc; text-align: center;">今日のログはありません</p>'; return; }
         list.innerHTML = dailyLog.map(log => `
             <div class="log-item">
                 <span>${log.val >= 2 ? '🍳' : '🌿'} ${log.name}</span>
-                <div>
-                    <span style="font-weight:bold; margin-right:10px;">+${log.val}</span>
-                    <i class="fas fa-times-circle log-delete" onclick="deleteLog(${log.id})"></i>
-                </div>
+                <div><span style="font-weight:bold; margin-right:10px;">+${log.val}</span><i class="fas fa-times-circle log-delete" onclick="deleteLog(${log.id})"></i></div>
             </div>
         `).join('');
     }
@@ -261,7 +283,7 @@
             const spine = document.createElement('div');
             spine.className = `book-spine`;
             spine.style.backgroundColor = rarities[b.rare].color;
-            spine.onclick = () => showPanel(b.id);
+            spine.onclick = () => showPanel(b.id, 'book');
             row.appendChild(spine);
         });
         container.appendChild(row);
@@ -282,16 +304,31 @@
         });
     }
 
-    window.showPanel = (bid) => {
-        const b = bookMaster.find(x => x.id === bid);
+    // パネル表示を共通化
+    window.showPanel = (id, type) => {
+        let title, desc, searchKey;
+        if (type === 'book') {
+            const b = bookMaster.find(x => x.id === id);
+            title = b.title; desc = b.desc; searchKey = b.title;
+        } else {
+            title = id; 
+            desc = `${title}を食べて、健康な毎日を送りましょう。necotastudioはあなたの「緑のある生活」を応援します。`;
+            searchKey = title;
+        }
+        
         const html = `<div style="text-align:center;">
-            <h2 style="color:var(--dark-green);">『${b.title}』</h2>
-            <p style="text-align:left; font-size:0.9rem; line-height:1.6; background:#f9f9f9; padding:15px; border-radius:10px;">${b.desc}</p>
-            <button class="rakuten-btn" onclick="window.open('https://item.rakuten.co.jp/search/mall/${encodeURIComponent(b.title)}/')"><i class="fas fa-shopping-bag"></i> 楽天で本を探す</button>
+            <h2 style="color:var(--dark-green);">『${title}』</h2>
+            <p style="text-align:left; font-size:0.9rem; line-height:1.6; background:#f9f9f9; padding:15px; border-radius:10px;">${desc}</p>
+            <button class="rakuten-btn" onclick="window.open('https://item.rakuten.co.jp/search/mall/${encodeURIComponent(searchKey)}/')"><i class="fas fa-shopping-bag"></i> 楽天で探す</button>
         </div>`;
         document.getElementById('panel-content').innerHTML = html;
         document.getElementById('panel').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
+    };
+
+    window.openShopping = () => {
+        const item = document.getElementById('item-select').value;
+        showPanel(item, 'item');
     };
 
     window.switchMode = (m) => {
