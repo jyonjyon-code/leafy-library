@@ -37,7 +37,6 @@
         .m-btn { flex: 1; padding: 10px; border: 2px solid var(--primary-green); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: inherit; }
         .m-btn.active { background: var(--primary-green); color: white; }
         
-        /* アフィリエイト誘導バナー風 */
         .info-tip { font-size: 0.7rem; color: var(--primary-green); text-align: right; margin-top: -10px; margin-bottom: 5px; cursor: pointer; text-decoration: underline; }
 
         footer { margin-top: 30px; padding: 20px; text-align: center; width: 100%; border-top: 1px solid #ddd; background: #fff; }
@@ -172,7 +171,7 @@
         { id: 20, title: "豆苗の無限ループ", rare: "C", desc: "切ってもまた生えてくる。そんな豆苗のような、終わらない楽しい日常。" }
     ];
 
-    let myLeaves = 0, myBooks = [], dailyLog = [], currentMode = 'veg', todayStr = new Date().toLocaleDateString();
+    let myLeaves = 0, myBooks = [], dailyLog = [], currentMode = 'veg', todayStr = new Date().toLocaleDateString("ja-JP");
 
     window.login = () => signInWithPopup(auth, provider);
     
@@ -181,31 +180,43 @@
             document.getElementById('login-btn').style.display = 'none';
             document.getElementById('logged-in-actions').style.display = 'block';
             document.getElementById('user-display').innerText = `🌿 ${user.displayName} さん`;
+            // 重要：読み込みが完了してからUIを出す
             await loadData(user.uid);
         } else {
             document.getElementById('login-btn').style.display = 'flex';
             document.getElementById('logged-in-actions').style.display = 'none';
             document.getElementById('user-display').innerText = "ログインして保存";
+            updateUI();
         }
     });
 
     async function loadData(uid) {
-        const docSnap = await getDoc(doc(db, "leafy_library", uid));
-        if (docSnap.exists()) {
-            const d = docSnap.data();
-            myLeaves = d.leaves || 0; 
-            myBooks = d.books || [];
-            dailyLog = (d.lastDate === todayStr) ? (d.dailyLog || []) : [];
-        }
+        try {
+            const docSnap = await getDoc(doc(db, "leafy_library", uid));
+            if (docSnap.exists()) {
+                const d = docSnap.data();
+                myLeaves = d.leaves || 0; 
+                myBooks = d.books || [];
+                // 日付チェック
+                if (d.lastDate === todayStr) {
+                    dailyLog = d.dailyLog || [];
+                } else {
+                    dailyLog = [];
+                    await sync(); // 日付変更を保存
+                }
+            }
+        } catch (e) { console.error("Load Error:", e); }
         updateUI();
     }
 
     async function sync() {
         const user = auth.currentUser;
         if (!user) return;
-        await setDoc(doc(db, "leafy_library", user.uid), { 
-            leaves: myLeaves, books: myBooks, dailyLog: dailyLog, lastDate: todayStr 
-        }, { merge: true });
+        try {
+            await setDoc(doc(db, "leafy_library", user.uid), { 
+                leaves: myLeaves, books: myBooks, dailyLog: dailyLog, lastDate: todayStr 
+            }, { merge: true });
+        } catch (e) { console.error("Sync Error:", e); }
     }
 
     window.addEntry = async () => {
@@ -215,6 +226,7 @@
         if (currentMode === 'dish') { points = dData[cat][itemName] || 2; }
         const currentDailyTotal = dailyLog.reduce((sum, log) => sum + log.val, 0);
         if (currentDailyTotal + points > 50) { alert("1日の上限は50枚です🌿"); return; }
+        
         const entry = { id: Date.now(), name: itemName, val: points };
         dailyLog.unshift(entry);
         myLeaves += points;
@@ -304,7 +316,6 @@
         });
     }
 
-    // パネル表示を共通化
     window.showPanel = (id, type) => {
         let title, desc, searchKey;
         if (type === 'book') {
@@ -348,9 +359,13 @@
         else { Object.keys(dData[cat]).forEach(i => { const pts = dData[cat][i]; itemS.add(new Option(`${i} (+${pts})`, i)); }); }
     };
 
+    // 重要：ホームに戻る前に同期を完遂させる
     window.safeGoBack = async () => {
         const user = auth.currentUser;
-        if (user) await sync();
+        if (user) {
+            document.getElementById('user-display').innerText = "保存中...";
+            await sync();
+        }
         window.location.href = "https://jyonjyon-code.github.io/hirumeshi/";
     };
 
