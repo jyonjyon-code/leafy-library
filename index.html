@@ -20,34 +20,34 @@
         
         .container { width: 95%; max-width: 500px; margin: 10px 0; box-sizing: border-box; }
         
-        /* ステータス & カウンター */
         .status-box { background: white; padding: 20px; border-radius: 25px; text-align: center; border: 2px solid #ddd; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .leaf-display { font-size: 2.5rem; font-weight: 900; color: var(--dark-green); margin: 10px 0; }
         
-        .counter-ui { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0; }
+        .counter-ui { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0; border-top: 1px solid #eee; padding-top: 20px; }
         .ctrl-btn { width: 60px; height: 60px; border-radius: 50%; border: none; background: white; color: var(--primary-green); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 0 #ccc; border: 2px solid #eee; transition: 0.1s; }
         .ctrl-btn:active { transform: translateY(3px); box-shadow: none; }
         .ctrl-btn.plus { background: var(--primary-green); color: white; box-shadow: 0 4px 0 var(--dark-green); border: none; }
 
-        /* 図書館へのボタン */
         .go-library { width: 100%; padding: 15px; background: var(--wood-brown); color: white; border-radius: 15px; border: none; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        /* 図書館ページ（フルスクリーン） */
+        /* 入力ログ（今日イチ風） */
+        .log-container { background: white; border-radius: 20px; border: 1px solid #ddd; padding: 10px; margin-top: 15px; max-height: 200px; overflow-y: auto; text-align: left; }
+        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
+        .log-item:last-child { border-bottom: none; }
+        .log-delete { color: #ff5252; cursor: pointer; padding: 5px; font-size: 1.1rem; }
+
         #library-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #3e2723; z-index: 1000; display: none; flex-direction: column; overflow-y: auto; }
         .library-header { background: #2d1b18; color: #d7ccc8; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 11; display: flex; justify-content: space-between; align-items: center; }
         .shelf-container { padding: 20px; display: flex; flex-direction: column; gap: 30px; align-items: center; }
-        .shelf-row { background: #5d4037; width: 100%; max-width: 600px; padding: 15px 10px 5px; border-radius: 4px; border-bottom: 12px solid #2d1b18; display: flex; flex-wrap: wrap; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .shelf-row { background: #5d4037; width: 100%; padding: 15px 10px 5px; border-radius: 4px; border-bottom: 12px solid #2d1b18; display: flex; flex-wrap: wrap; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); box-sizing: border-box; }
         
-        .book-spine { width: 22px; height: 80px; border-radius: 2px; cursor: pointer; transition: 0.2s; position: relative; border-left: 3px solid rgba(255,255,255,0.2); }
-        .book-spine:hover { transform: translateY(-15px) rotate(-2deg); }
-        .glow-l { box-shadow: 0 0 15px var(--rare-l); border: 1px solid gold; }
+        .book-spine { width: 22px; height: 80px; border-radius: 2px; cursor: pointer; transition: 0.2s; border-left: 3px solid rgba(255,255,255,0.2); }
+        .book-spine:hover { transform: translateY(-15px); }
 
-        /* 共通 UI */
         .input-card { background: white; padding: 20px; border-radius: 25px; border: 3px solid var(--primary-green); }
         .m-btn { flex: 1; padding: 10px; border: 2px solid var(--primary-green); background: white; border-radius: 12px; cursor: pointer; font-weight: bold; font-family: inherit; }
         .m-btn.active { background: var(--primary-green); color: white; }
         
-        /* パネル */
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index: 2000; display:none; }
         #panel { position: fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:85%; max-width:400px; background:white; border-radius:30px; padding:30px; z-index: 2001; display:none; text-align:center; border: 6px solid var(--primary-green); }
     </style>
@@ -63,16 +63,6 @@
     <div id="user-display" style="font-size: 12px; color: #666; margin-bottom: 5px;">読み込み中...</div>
     <div class="leaf-display">🍃 <span id="leaf-total">0</span> <small style="font-size: 1rem;">枚</small></div>
     
-    <div class="counter-ui">
-        <button class="ctrl-btn" onclick="adjustLeaves(-1)"><i class="fas fa-minus"></i></button>
-        <div style="text-align: center;">
-            <div style="font-size: 0.7rem; color: #999; margin-bottom: 5px;">今日集めた分</div>
-            <div id="daily-count-txt" style="font-size: 1.5rem; font-weight: 900;">0</div>
-            <div style="font-size: 0.6rem; color: #bbb;">上限 50枚</div>
-        </div>
-        <button class="ctrl-btn plus" onclick="adjustLeaves(1)"><i class="fas fa-plus"></i></button>
-    </div>
-
     <button class="go-library" onclick="openLibrary()">
         <i class="fas fa-book"></i> 図書室へ行く
     </button>
@@ -81,22 +71,29 @@
 
 <div class="container input-card">
     <div style="display:flex; gap:8px; margin-bottom:15px;">
-        <button id="m-veg" class="m-btn active" onclick="switchMode('veg')">🥬 種類から選ぶ</button>
-        <button id="m-dish" class="m-btn" onclick="switchMode('dish')">🍳 料理から選ぶ</button>
+        <button id="m-veg" class="m-btn active" onclick="switchMode('veg')">🥬 種類</button>
+        <button id="m-dish" class="m-btn" onclick="switchMode('dish')">🍳 料理</button>
     </div>
     <select id="cat-select" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;" onchange="updateItemList()"></select>
     <select id="item-select" style="width:100%; padding:12px; border-radius:10px; margin-bottom:10px; border:1px solid #ddd;"></select>
-    <p style="font-size: 0.7rem; color: #888; text-align: center; margin: 0;">※選んで上の＋ボタンを押してね</p>
+    
+    <div class="counter-ui">
+        <div style="text-align: center;">
+            <div style="font-size: 0.7rem; color: #999; margin-bottom: 5px;">今日集めた分</div>
+            <div id="daily-count-txt" style="font-size: 1.5rem; font-weight: 900;">0</div>
+            <div style="font-size: 0.6rem; color: #bbb;">上限 50枚</div>
+        </div>
+        <button class="ctrl-btn plus" onclick="addEntry()"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <div id="log-list" class="log-container">
+        <p style="font-size: 0.7rem; color: #ccc; text-align: center;">今日のログはありません</p>
+    </div>
 </div>
 
 <div class="container">
     <h3 style="border-left: 5px solid var(--primary-green); padding-left: 10px;">交換所 (Store)</h3>
     <div id="store-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-</div>
-
-<div class="footer-links" style="text-align: center; margin-top: 20px; font-size: 0.8rem;">
-    <a href="https://jyonjyon-code.github.io/hirumeshi/" style="text-decoration:none; color:var(--wood-brown); font-weight:bold;">ひるめしホーム</a>
-    <p style="color:#aaa; font-size:10px;">&copy; 2026 necotastudio</p>
 </div>
 
 <div id="library-page">
@@ -105,8 +102,7 @@
         <span style="font-weight:bold; font-size:1.2rem; font-family: serif;">Leafy Library</span>
         <span>所蔵: <span id="lib-book-count">0</span>冊</span>
     </div>
-    <div class="shelf-container" id="shelf-rows-container">
-        </div>
+    <div class="shelf-container" id="shelf-rows-container"></div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
@@ -132,10 +128,10 @@
         { id: 2, title: "森の魔法使いと緑の杖", rare: "U", desc: "葉っぱを操る魔法でピンチを切り抜ける冒険譚。" },
         { id: 3, title: "迷宮のレタス姫", rare: "R", desc: "レタスを育てて生き延びる、たくましい姫の物語。" },
         { id: 4, title: "銀河へ飛ぶハーブ船", rare: "E", desc: "香りの力で星々を救うSFファンタジー。" },
-        { id: 5, title: "翡翠の司書と禁断の葉", rare: "L", desc: "necotastudio描き下ろし。緑の知識を司る精霊の物語。" }
+        { id: 5, title: "翡翠の司書と禁断의 葉", rare: "L", desc: "necotastudio描き下ろし。緑の知識を司る精霊の物語。" }
     ];
 
-    let myLeaves = 0, myBooks = [], dailyCount = 0, todayStr = new Date().toLocaleDateString();
+    let myLeaves = 0, myBooks = [], dailyLog = [], todayStr = new Date().toLocaleDateString();
 
     window.login = () => signInWithPopup(auth, provider);
     
@@ -156,7 +152,7 @@
             const d = docSnap.data();
             myLeaves = d.leaves || 0; 
             myBooks = d.books || [];
-            dailyCount = (d.lastDate === todayStr) ? (d.dailyCount || 0) : 0;
+            dailyLog = (d.lastDate === todayStr) ? (d.dailyLog || []) : [];
         }
         updateUI();
     }
@@ -165,19 +161,34 @@
         const user = auth.currentUser;
         if (!user) return;
         await setDoc(doc(db, "leafy_library", user.uid), { 
-            leaves: myLeaves, books: myBooks, dailyCount: dailyCount, lastDate: todayStr 
+            leaves: myLeaves, books: myBooks, dailyLog: dailyLog, lastDate: todayStr 
         }, { merge: true });
     }
 
-    // カウンター操作
-    window.adjustLeaves = async (val) => {
-        if (val > 0 && dailyCount >= 50) { alert("1日の上限は50枚です🌿"); return; }
-        if (val < 0 && dailyCount <= 0) return;
+    // エントリー追加（今日イチ風）
+    window.addEntry = async () => {
+        const item = document.getElementById('item-select').value;
+        const currentDailyTotal = dailyLog.reduce((sum, log) => sum + log.val, 0);
         
-        myLeaves += val;
-        dailyCount += val;
+        if (currentDailyTotal >= 50) { alert("1日の上限は50枚です🌿"); return; }
+        
+        const entry = { id: Date.now(), name: item, val: 1 };
+        dailyLog.unshift(entry); // 最新を上に
+        myLeaves += 1;
+        
         updateUI();
         await sync();
+    };
+
+    // ログ個別削除
+    window.deleteLog = async (logId) => {
+        const index = dailyLog.findIndex(l => l.id === logId);
+        if (index !== -1) {
+            myLeaves -= dailyLog[index].val;
+            dailyLog.splice(index, 1);
+            updateUI();
+            await sync();
+        }
     };
 
     window.buyBook = async (id) => {
@@ -192,28 +203,40 @@
 
     function updateUI() {
         document.getElementById('leaf-total').innerText = myLeaves;
+        const dailyCount = dailyLog.reduce((sum, log) => sum + log.val, 0);
         document.getElementById('daily-count-txt').innerText = dailyCount;
         document.getElementById('lib-book-count').innerText = myBooks.length;
+        renderLog();
         renderStore();
     }
 
-    window.openLibrary = () => {
-        renderLibrary();
-        document.getElementById('library-page').style.display = 'flex';
-    };
-    window.closeLibrary = () => {
-        document.getElementById('library-page').style.display = 'none';
-    };
+    function renderLog() {
+        const list = document.getElementById('log-list');
+        if (dailyLog.length === 0) {
+            list.innerHTML = '<p style="font-size: 0.7rem; color: #ccc; text-align: center;">今日のログはありません</p>';
+            return;
+        }
+        list.innerHTML = dailyLog.map(log => `
+            <div class="log-item">
+                <span>🌿 ${log.name}</span>
+                <div>
+                    <span style="font-weight:bold; margin-right:10px;">+${log.val}</span>
+                    <i class="fas fa-times-circle log-delete" onclick="deleteLog(${log.id})"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.openLibrary = () => { renderLibrary(); document.getElementById('library-page').style.display = 'flex'; };
+    window.closeLibrary = () => { document.getElementById('library-page').style.display = 'none'; };
 
     function renderLibrary() {
         const container = document.getElementById('shelf-rows-container');
         container.innerHTML = "";
-        
         let row = document.createElement('div');
         row.className = 'shelf-row';
-        
         myBooks.forEach((bid, index) => {
-            if (index > 0 && index % 15 === 0) { // 15冊ごとに段を変える
+            if (index > 0 && index % 12 === 0) {
                 container.appendChild(row);
                 row = document.createElement('div');
                 row.className = 'shelf-row';
@@ -221,7 +244,7 @@
             const b = bookMaster.find(x => x.id === bid);
             if (!b) return;
             const spine = document.createElement('div');
-            spine.className = `book-spine ${b.rare==='L' ? 'glow-l' : ''}`;
+            spine.className = `book-spine`;
             spine.style.backgroundColor = rarities[b.rare].color;
             spine.onclick = () => showPanel(b.id);
             row.appendChild(spine);
@@ -246,16 +269,11 @@
 
     window.showPanel = (bid) => {
         const b = bookMaster.find(x => x.id === bid);
-        if (!b) return;
-        const html = `
-            <div style="text-align:center;">
-                <span style="background:${rarities[b.rare].color}; color:white; padding:2px 10px; border-radius:10px; font-size:0.7rem;">${b.rare}</span>
-                <h2 style="margin:10px 0; color:var(--dark-green);">『${b.title}』</h2>
-                <div style="background:#fdfdfd; padding:15px; border-radius:15px; border:1px solid #eee; text-align:left; font-size:0.9rem; line-height:1.6; margin-bottom:15px;">${b.desc}</div>
-                <a href="https://www.rakuten.co.jp/" target="_blank" style="text-decoration:none;">
-                    <button style="background:#bf0000; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%; font-size:1rem;"><i class="fas fa-shopping-cart"></i> 楽天で探す</button>
-                </a>
-            </div>`;
+        const html = `<div style="text-align:center;">
+            <h2 style="color:var(--dark-green);">『${b.title}』</h2>
+            <p style="text-align:left; font-size:0.9rem;">${b.desc}</p>
+            <button class="m-btn" style="background:#bf0000; color:white; border:none;" onclick="window.open('https://www.rakuten.co.jp/')">楽天で探す</button>
+        </div>`;
         document.getElementById('panel-content').innerHTML = html;
         document.getElementById('panel').style.display = 'block';
         document.getElementById('overlay').style.display = 'block';
