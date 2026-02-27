@@ -58,7 +58,7 @@
 <body>
 
 <header>
-    <div class="back-home" onclick="safeGoBack()"><i class="fas fa-home"></i> ホーム</div>
+    <div class="back-home" onclick="safeGoBack(event)"><i class="fas fa-home"></i> ホーム</div>
     <h1 style="margin:0; font-size: 1.2rem;">Leafy Library</h1>
 </header>
 
@@ -105,7 +105,7 @@
 </div>
 
 <footer>
-    <button class="footer-home-btn" onclick="safeGoBack()"><i class="fas fa-home"></i> ホームへ戻る</button>
+    <button class="footer-home-btn" onclick="safeGoBack(event)"><i class="fas fa-home"></i> ホームへ戻る</button>
     <div class="copyright">© necotastudio</div>
 </footer>
 
@@ -165,7 +165,7 @@
         { id: 14, title: "トレビスの赤い宝石", rare: "E", desc: "鮮やかな赤色を持つトレビス。それを狙う盗賊と守る村人の知恵比べ。" },
         { id: 15, title: "necotastudio: 創造の葉", rare: "L", desc: "スタジオの誕生秘話と、これから生まれる作品たちのイメージ画集。" },
         { id: 16, title: "春菊の小さな恋", rare: "C", desc: "ほろ苦い想いを抱える少女が、料理を通じて成長する青春短編集。" },
-        { id: 17, title: "大葉の風に乗って", rare: "U", desc: "爽やかな風と共に旅をする、大葉の翼を持った少年たちの物語。" },
+        { id: 17, title: "大葉の風に乗って", rare: "U", desc: "爽やかな風と共に旅をする、大葉의翼を持った少年たちの物語。" },
         { id: 18, title: "モロヘイヤ王国の王冠", rare: "R", desc: "ネバネバした不思議な森の奥にある、モロヘイヤ王国の繁栄の秘密。" },
         { id: 19, title: "明日葉の希望", rare: "E", desc: "今日摘んでも明日には芽吹く。絶望に立ち向かう人々に贈る応援歌。" },
         { id: 20, title: "豆苗の無限ループ", rare: "C", desc: "切ってもまた生えてくる。そんな豆苗のような、終わらない楽しい日常。" }
@@ -173,6 +173,7 @@
 
     let myLeaves = 0, myBooks = [], dailyLog = [], currentMode = 'veg', todayStr = new Date().toLocaleDateString("ja-JP");
 
+    // 全ての関数をwindowオブジェクトに紐付け、HTMLから呼べるようにする
     window.login = () => signInWithPopup(auth, provider);
     
     onAuthStateChanged(auth, async (user) => {
@@ -180,7 +181,6 @@
             document.getElementById('login-btn').style.display = 'none';
             document.getElementById('logged-in-actions').style.display = 'block';
             document.getElementById('user-display').innerText = `🌿 ${user.displayName} さん`;
-            // 重要：読み込みが完了してからUIを出す
             await loadData(user.uid);
         } else {
             document.getElementById('login-btn').style.display = 'flex';
@@ -197,12 +197,11 @@
                 const d = docSnap.data();
                 myLeaves = d.leaves || 0; 
                 myBooks = d.books || [];
-                // 日付チェック
                 if (d.lastDate === todayStr) {
                     dailyLog = d.dailyLog || [];
                 } else {
                     dailyLog = [];
-                    await sync(); // 日付変更を保存
+                    await sync(); 
                 }
             }
         } catch (e) { console.error("Load Error:", e); }
@@ -255,10 +254,13 @@
     };
 
     function updateUI() {
-        document.getElementById('leaf-total').innerText = myLeaves;
+        const totalEl = document.getElementById('leaf-total');
+        if (totalEl) totalEl.innerText = myLeaves;
         const dailyCount = dailyLog.reduce((sum, log) => sum + log.val, 0);
-        document.getElementById('daily-count-txt').innerText = dailyCount;
-        document.getElementById('lib-book-count').innerText = myBooks.length;
+        const countTxt = document.getElementById('daily-count-txt');
+        if (countTxt) countTxt.innerText = dailyCount;
+        const libCount = document.getElementById('lib-book-count');
+        if (libCount) libCount.innerText = myBooks.length;
         renderLog();
         renderStore();
     }
@@ -359,18 +361,25 @@
         else { Object.keys(dData[cat]).forEach(i => { const pts = dData[cat][i]; itemS.add(new Option(`${i} (+${pts})`, i)); }); }
     };
 
-    // 重要：ホームに戻る前に同期を完遂させる
-    window.safeGoBack = async () => {
+    // ホームに戻る処理：同期を完遂させてから移動
+    window.safeGoBack = async (e) => {
+        if (e) e.preventDefault();
         const user = auth.currentUser;
         if (user) {
-            document.getElementById('user-display').innerText = "保存中...";
-            await sync();
+            const display = document.getElementById('user-display');
+            if (display) display.innerText = "保存中...";
+            try {
+                await sync(); 
+            } catch (err) {
+                console.error("Save failed", err);
+            }
         }
         window.location.href = "https://jyonjyon-code.github.io/hirumeshi/";
     };
 
     window.closePanel = () => { document.getElementById('panel').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; };
 
+    // 初期起動
     switchMode('veg');
 </script>
 </body>
